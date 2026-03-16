@@ -14,13 +14,24 @@ import {
     AlertCircle,
     Loader2,
     Wrench,
-    Code2
+    Code2,
+    Hammer,
+    Zap,
+    ChevronRight,
+    ArrowLeft,
+    Terminal,
+    Cpu,
+    Boxes,
+    GitBranch,
+    ClipboardCheck,
+    History
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { TabNavigation } from "@/components/TabNavigation";
+import { getFeature, FeatureContext } from "@/lib/context";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface ComplianceIssue {
     severity: "HIGH" | "MEDIUM" | "LOW" | "CRITICAL";
@@ -33,131 +44,119 @@ interface ComplianceIssue {
 
 export default function FixesPage() {
     const searchParams = useSearchParams();
-    const runId = searchParams.get("run_id");
+    const router = useRouter();
     const featureId = searchParams.get("feature_id");
 
-    const [openIssueIndex, setOpenIssueIndex] = useState<number | null>(null);
+    const [feature, setFeature] = useState<FeatureContext | null>(null);
+    const [openIssueIndex, setOpenIssueIndex] = useState<number | null>(0);
     const [fixes, setFixes] = useState<ComplianceIssue[]>([]);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
     const [executiveSummary, setExecutiveSummary] = useState("");
 
     useEffect(() => {
-        const fetchOrGenerateFixes = async () => {
-            if (!runId || !featureId) {
-                setLoading(false);
-                return;
+        if (!featureId) {
+            router.push("/dashboard");
+            return;
+        }
+
+        const data = getFeature(featureId);
+        if (!data) {
+            router.push("/dashboard");
+            return;
+        }
+        setFeature(data);
+
+        if (data.legal_review?.run_id) {
+            fetchOrGenerateFixes(data.feature_id, data.legal_review.run_id);
+        } else {
+            setLoading(false);
+        }
+    }, [featureId]);
+
+    const fetchOrGenerateFixes = async (fid: string, rid: string) => {
+        try {
+            // 1. Fetch Existing Results
+            const result = await api.pipeline.getResults(fid, rid);
+            let autoFixData = result.auto_fix;
+
+            // Handle JSON string if applicable
+            if (typeof autoFixData === 'string') {
+                try {
+                    const cleanJson = autoFixData.replace(/```json/g, '').replace(/```/g, '').trim();
+                    autoFixData = JSON.parse(cleanJson);
+                } catch (e) {
+                    autoFixData = null;
+                }
             }
 
-            try {
-                // 1. Fetch Existing Results
-                const result = await api.pipeline.getResults(featureId, runId);
-
-                // Check if 'auto_fix' exists in the DB result
-                let autoFixData = result.auto_fix;
-
-                // Handle JSON string if applicable
-                if (typeof autoFixData === 'string') {
-                    try {
-                        const cleanJson = autoFixData.replace(/```json/g, '').replace(/```/g, '').trim();
-                        autoFixData = JSON.parse(cleanJson);
-                    } catch (e) {
-                        console.error("Failed to parse auto_fix JSON string:", e);
-                        // Don't overwrite with empty object immediately, let it flow to generation if needed
-                        autoFixData = null;
-                    }
-                }
-
-                // Handle double nesting if present (result.auto_fix.auto_fix)
-                if (autoFixData && autoFixData.auto_fix) {
-                    autoFixData = autoFixData.auto_fix;
-                }
-
-                // 2. If no fixes found, Trigger Generation (The "Agentic" part)
-                if (!autoFixData || !autoFixData.fixes || autoFixData.fixes.length === 0) {
-                    setGenerating(true);
-                    try {
-                        const autofixResult = await api.pipeline.runAutofix(featureId, runId);
-                        autoFixData = autofixResult.auto_fix;
-
-                        // Handle potential string return from generation too
-                        if (typeof autoFixData === 'string') {
-                            try {
-                                const cleanJson = autoFixData.replace(/```json/g, '').replace(/```/g, '').trim();
-                                autoFixData = JSON.parse(cleanJson);
-                            } catch (e) {
-                                console.error("Failed to parse generated auto_fix JSON:", e);
-                            }
-                        }
-
-                        if (autoFixData && autoFixData.auto_fix) {
-                            autoFixData = autoFixData.auto_fix;
-                        }
-
-                    } catch (genError) {
-                        console.error("Failed to generate fixes:", genError);
-                    } finally {
-                        setGenerating(false);
-                    }
-                }
-
-                // 3. Map Data to UI
-                if (autoFixData && autoFixData.fixes) {
-                    setExecutiveSummary(autoFixData.summary || "Compliance remediation plan ready.");
-                    mapAndSetFixes(autoFixData.fixes);
-                }
-
-            } catch (error) {
-                console.error("Failed to fetch/generate fixes:", error);
-            } finally {
-                setLoading(false);
+            if (autoFixData && autoFixData.auto_fix) {
+                autoFixData = autoFixData.auto_fix;
             }
-        };
 
-        fetchOrGenerateFixes();
-    }, [runId, featureId]);
+            // 2. If no fixes found, Trigger Generation
+            if (!autoFixData || !autoFixData.fixes || autoFixData.fixes.length === 0) {
+                setGenerating(true);
+                try {
+                    const autofixResult = await api.pipeline.runAutofix(fid, rid);
+                    autoFixData = autofixResult.auto_fix;
+
+                    if (typeof autoFixData === 'string') {
+                        try {
+                            const cleanJson = autoFixData.replace(/```json/g, '').replace(/```/g, '').trim();
+                            autoFixData = JSON.parse(cleanJson);
+                        } catch (e) {
+                            console.error("Failed to parse generated auto_fix JSON:", e);
+                        }
+                    }
+
+                    if (autoFixData && autoFixData.auto_fix) {
+                        autoFixData = autoFixData.auto_fix;
+                    }
+
+                } catch (genError) {
+                    console.error("Failed to generate fixes:", genError);
+                } finally {
+                    setGenerating(false);
+                }
+            }
+
+            // 3. Map Data to UI
+            if (autoFixData && autoFixData.fixes) {
+                setExecutiveSummary(autoFixData.summary || "Remediation logic synthesized.");
+                mapAndSetFixes(autoFixData.fixes);
+            }
+
+        } catch (error) {
+            console.error("Failed to fetch/generate fixes:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const mapAndSetFixes = (backendFixes: any[]) => {
         const mapped = backendFixes.map((f: any) => ({
             severity: (f.severity || "MEDIUM").toUpperCase(),
-            title: f.title || "Compliance Fix",
-            summary: f.description || "No description provided.",
-            problem: f.issue_reference || "Associated with identified compliance gap.",
-            fix: f.remediation_strategy || "Apply recommended changes.",
+            title: f.title || f.name || "Compliance Fix",
+            summary: f.description || f.summary || "No description provided.",
+            problem: f.issue_reference || f.problem || "Associated with identified compliance gap.",
+            fix: f.remediation_strategy || f.strategy || "Apply recommended changes.",
             steps: Array.isArray(f.implementation_steps)
                 ? f.implementation_steps
-                : [f.implementation_steps || "Review code manually."]
+                : Array.isArray(f.steps) ? f.steps : [f.implementation_steps || f.steps || "Review code manually."]
         }));
         setFixes(mapped);
     };
 
-    const toggleIssue = (index: number) => {
-        setOpenIssueIndex(openIssueIndex === index ? null : index);
-    };
-
-    const getSeverityColor = (severity: string) => {
+    const getSeverityStyles = (severity: string) => {
         switch (severity) {
             case "CRITICAL":
             case "HIGH":
-                return {
-                    badge: "bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800/30",
-                    icon: "text-red-600 dark:text-red-400"
-                };
+                return "border-red-500 text-red-500 bg-red-500/5";
             case "MEDIUM":
-                return {
-                    badge: "bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/30",
-                    icon: "text-amber-600 dark:text-amber-400"
-                };
-            case "LOW":
-                return {
-                    badge: "bg-teal-100 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400 border-teal-200 dark:border-teal-800/30",
-                    icon: "text-teal-600 dark:text-teal-400"
-                };
+                return "border-amber-500 text-amber-500 bg-amber-500/5";
             default:
-                return {
-                    badge: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700",
-                    icon: "text-slate-600 dark:text-slate-400"
-                };
+                return "border-teal text-teal bg-teal/5";
         }
     };
 
@@ -165,15 +164,15 @@ export default function FixesPage() {
         return (
             <div className="min-h-screen bg-parchment dark:bg-[#0A0A0A] flex flex-col items-center justify-center space-y-6">
                 <div className="relative">
-                    <Loader2 className="w-16 h-16 text-teal animate-spin" />
+                    <Scale className="w-16 h-16 text-teal animate-spin-slow" />
                     <Wrench className="w-6 h-6 text-teal absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
                 </div>
                 <div className="text-center space-y-2">
                     <h2 className="font-serif text-2xl text-teal">
-                        {generating ? "Architecting Solutions..." : "Loading Fixes..."}
+                        {generating ? "Synthesizing Remediation Plan..." : "Analyzing Artifacts..."}
                     </h2>
-                    <p className="text-slate/60 font-mono text-sm max-w-md">
-                        JurAI agents are generating engineering steps for your compliance gaps.
+                    <p className="text-slate/60 text-[10px] uppercase tracking-widest max-w-sm font-bold">
+                        Assembling automated remediation sequence
                     </p>
                 </div>
             </div>
@@ -181,212 +180,185 @@ export default function FixesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-parchment dark:bg-[#0A0A0A] text-charcoal dark:text-parchment">
+        <div className="min-h-screen bg-parchment dark:bg-[#0A0A0A] text-charcoal dark:text-parchment pb-20">
             {/* Header */}
-            <header className="px-6 py-6 border-b border-charcoal/5 dark:border-white/5 flex justify-between items-center bg-parchment/50 dark:bg-[#0A0A0A]/50 backdrop-blur-sm sticky top-0 z-50">
-                <div className="flex items-center gap-4">
+            <header className="px-6 py-4 border-b border-charcoal/5 dark:border-white/5 flex justify-between items-center bg-parchment/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md sticky top-0 z-50">
+                <div className="flex items-center gap-6">
+                    <Link href={`/verdict?feature_id=${featureId}`} className="p-2 hover:bg-charcoal/5 dark:hover:bg-white/5 rounded-lg transition-colors">
+                        <ArrowLeft className="w-5 h-5 text-slate/50" />
+                    </Link>
+                    <div className="h-4 w-px bg-charcoal/10 dark:bg-white/10" />
                     <div className="flex items-center gap-2">
-                        <Scale className="w-5 h-5 text-teal" />
-                        <span className="font-serif text-lg font-bold tracking-tight text-teal dark:text-parchment">JurAI</span>
+                        <Hammer className="w-5 h-5 text-teal" />
+                        <h1 className="font-serif text-lg font-bold text-teal dark:text-parchment">{feature?.feature_name} — Remediation</h1>
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-slate/50">Engineering Plan</span>
+                <div className="flex items-center gap-4">
+                    <ThemeToggle />
                 </div>
             </header>
 
-            {/* Main Content */}
-            <main className="max-w-5xl mx-auto px-6 py-16 space-y-16">
-                <TabNavigation activeTab="fixes" />
-
-                {/* Hero Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="text-center space-y-4"
-                >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal/5 border border-teal/20 rounded-full mb-4">
-                        <Code2 className="w-4 h-4 text-teal" />
-                        <span className="text-xs font-mono uppercase tracking-widest text-teal">Auto-Fix Generated</span>
-                    </div>
-                    <h1 className="font-serif text-5xl md:text-6xl text-teal dark:text-parchment tracking-tight">
-                        Remediation Plan
-                    </h1>
-                    <p className="text-lg text-slate/60 dark:text-slate/40 max-w-2xl mx-auto font-light">
-                        Actionable engineering steps to mitigate identified risks.
-                    </p>
-                </motion.div>
-
-                {/* Compliance Issues Accordion */}
-                <motion.section
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="space-y-4"
-                >
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="font-serif text-2xl text-teal dark:text-parchment">Task List</h2>
-                        <span className="text-sm text-slate/50 font-mono">{fixes.length} Tasks</span>
-                    </div>
-
-                    <div className="space-y-3">
-                        {fixes.map((issue, index) => {
-                            const isOpen = openIssueIndex === index;
-                            const colors = getSeverityColor(issue.severity);
-
-                            return (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="bg-white dark:bg-[#151515] border border-charcoal/10 dark:border-white/10 rounded-sm overflow-hidden shadow-sm hover:shadow-md transition-all"
+            <main className="max-w-6xl mx-auto px-6 pt-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    
+                    {/* Left Column: Task List */}
+                    <div className="lg:col-span-4 space-y-6">
+                        <div className="flex items-center justify-between px-2">
+                            <h2 className="font-serif text-xl">Action Items</h2>
+                            <span className="text-[10px] text-teal bg-teal/5 px-2 py-0.5 rounded-full border border-teal/10 uppercase tracking-tighter font-bold">
+                                {fixes.length} fixes pending
+                            </span>
+                        </div>
+                        
+                        <div className="space-y-3">
+                            {fixes.map((fix, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setOpenIssueIndex(idx)}
+                                    className={cn(
+                                        "w-full text-left p-4 rounded-2xl border transition-all group",
+                                        openIssueIndex === idx 
+                                            ? "bg-teal/5 border-teal shadow-lg shadow-teal/5 scale-[1.02]" 
+                                            : "bg-white dark:bg-[#151515] border-charcoal/5 dark:border-white/5 hover:border-teal/30"
+                                    )}
                                 >
-                                    {/* Collapsed Header */}
-                                    <button
-                                        onClick={() => toggleIssue(index)}
-                                        className="w-full p-6 flex items-center justify-between hover:bg-charcoal/5 dark:hover:bg-white/5 transition-colors"
-                                    >
-                                        <div className="flex items-center gap-4 flex-1 text-left">
-                                            {/* Risk Badge */}
-                                            <div className={cn("px-3 py-1 rounded-full border text-xs font-mono uppercase tracking-wider min-w-[80px] text-center", colors.badge)}>
-                                                {issue.severity}
-                                            </div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className={cn(
+                                            "text-[8px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-widest",
+                                            getSeverityStyles(fix.severity)
+                                        )}>
+                                            {fix.severity}
+                                        </span>
+                                        {openIssueIndex === idx && <Zap className="w-3 h-3 text-teal animate-pulse" />}
+                                    </div>
+                                    <h3 className={cn(
+                                        "font-serif text-sm leading-tight",
+                                        openIssueIndex === idx ? "text-teal" : "text-slate-700 dark:text-slate-300"
+                                    )}>
+                                        {fix.title}
+                                    </h3>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-                                            {/* Issue Info */}
-                                            <div className="flex-1">
-                                                <h3 className="font-medium text-lg text-charcoal dark:text-parchment mb-1">
-                                                    {issue.title}
-                                                </h3>
-                                                <p className="text-sm text-slate/60 dark:text-slate/40 font-light truncate max-w-lg">
-                                                    {issue.summary}
-                                                </p>
+                    {/* Right Column: Active Task Details */}
+                    <div className="lg:col-span-8">
+                        <AnimatePresence mode="wait">
+                            {openIssueIndex !== null && fixes[openIssueIndex] && (
+                                <motion.div
+                                    key={openIssueIndex}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="bg-white dark:bg-[#151515] border border-charcoal/5 dark:border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden min-h-[600px]"
+                                >
+                                    {/* Task Header */}
+                                    <div className="relative z-10 mb-10">
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="w-12 h-12 rounded-2xl bg-teal/10 flex items-center justify-center text-teal">
+                                                <ClipboardCheck className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <div className="text-[10px] uppercase text-teal tracking-widest font-bold">Recommended Sequence</div>
+                                                <h2 className="font-serif text-3xl md:text-4xl text-charcoal dark:text-parchment">
+                                                    {fixes[openIssueIndex].title}
+                                                </h2>
                                             </div>
                                         </div>
 
-                                        <ChevronDown
-                                            className={cn(
-                                                "w-5 h-5 text-slate/40 transition-transform duration-300 flex-shrink-0 ml-4",
-                                                isOpen && "rotate-180"
-                                            )}
-                                        />
-                                    </button>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="bg-charcoal/[0.02] dark:bg-white/[0.02] border border-charcoal/5 dark:border-white/5 rounded-2xl p-6">
+                                                <h4 className="text-[10px] uppercase text-slate/40 mb-3 flex items-center gap-2 font-bold">
+                                                    <AlertCircle className="w-3 h-3" />
+                                                    The Problem
+                                                </h4>
+                                                <p className="text-sm text-slate-600 dark:text-slate-400 font-serif leading-relaxed italic">
+                                                    "{fixes[openIssueIndex].problem}"
+                                                </p>
+                                            </div>
+                                            <div className="bg-teal/[0.02] border border-teal/10 rounded-2xl p-6">
+                                                <h4 className="text-[10px] uppercase text-teal/40 mb-3 flex items-center gap-2 font-bold">
+                                                    <CheckCircle2 className="w-3 h-3" />
+                                                    The Solution
+                                                </h4>
+                                                <p className="text-sm text-teal/80 dark:text-teal/40 font-serif leading-relaxed font-bold">
+                                                    {fixes[openIssueIndex].fix}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                    {/* Expanded Content */}
-                                    <AnimatePresence>
-                                        {isOpen && (
-                                            <motion.div
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{ height: "auto", opacity: 1 }}
-                                                exit={{ height: 0, opacity: 0 }}
-                                                className="overflow-hidden"
-                                            >
-                                                <div className="px-6 pb-6 space-y-6 border-t border-charcoal/5 dark:border-white/5 pt-6 bg-charcoal/[0.02] dark:bg-white/[0.02]">
-                                                    {/* Context Grid */}
-                                                    <div className="grid md:grid-cols-2 gap-6">
-                                                        {/* Why This Is A Problem */}
-                                                        <div className="space-y-2">
-                                                            <div className="flex items-center gap-2">
-                                                                <AlertCircle className={cn("w-4 h-4", colors.icon)} />
-                                                                <h4 className="text-xs font-mono uppercase tracking-widest text-slate/50">
-                                                                    Issue Context
-                                                                </h4>
-                                                            </div>
-                                                            <p className="text-sm text-slate/70 dark:text-slate/40 leading-relaxed font-light bg-white dark:bg-black/20 p-3 rounded border border-charcoal/5 dark:border-white/5">
-                                                                {issue.problem}
-                                                            </p>
-                                                        </div>
-
-                                                        {/* Recommended Fix */}
-                                                        <div className="space-y-2">
-                                                            <div className="flex items-center gap-2">
-                                                                <CheckCircle2 className="w-4 h-4 text-teal" />
-                                                                <h4 className="text-xs font-mono uppercase tracking-widest text-slate/50">
-                                                                    Strategy
-                                                                </h4>
-                                                            </div>
-                                                            <p className="text-sm text-charcoal dark:text-parchment font-medium bg-white dark:bg-black/20 p-3 rounded border border-charcoal/5 dark:border-white/5">
-                                                                {issue.fix}
-                                                            </p>
-                                                        </div>
+                                    {/* Implementation Steps */}
+                                    <div className="space-y-4 relative z-10">
+                                        <h3 className="text-xs font-bold text-teal uppercase tracking-widest flex items-center gap-2 mb-6">
+                                            <GitBranch className="w-4 h-4" />
+                                            Implementation Log
+                                        </h3>
+                                        <div className="space-y-4">
+                                            {fixes[openIssueIndex].steps.map((step, sidx) => (
+                                                <motion.div 
+                                                    key={sidx}
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: sidx * 0.1 }}
+                                                    className="flex items-start gap-4 p-4 rounded-xl bg-charcoal/[0.02] dark:bg-white/[0.02] border border-charcoal/5 dark:border-white/5 group hover:border-teal/30 transition-colors"
+                                                >
+                                                    <div className="w-6 h-6 rounded-lg bg-teal/10 text-teal text-[10px] flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                                                        {sidx + 1}
                                                     </div>
+                                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed group-hover:text-charcoal dark:group-hover:text-parchment transition-colors font-medium">
+                                                        {step}
+                                                    </p>
+                                                </motion.div>
+                                            ))}
+                                        </div>
+                                    </div>
 
-                                                    {/* Implementation Steps */}
-                                                    <div>
-                                                        <div className="flex items-center gap-2 mb-3">
-                                                            <Code2 className="w-4 h-4 text-teal" />
-                                                            <h4 className="text-xs font-mono uppercase tracking-widest text-teal">
-                                                                Implementation Steps
-                                                            </h4>
-                                                        </div>
-                                                        <ul className="space-y-0 border border-charcoal/10 dark:border-white/10 rounded bg-white dark:bg-black/20 divide-y divide-charcoal/5 dark:divide-white/5">
-                                                            {issue.steps.map((step, stepIndex) => (
-                                                                <li key={stepIndex} className="flex items-start gap-4 p-4 hover:bg-teal/[0.02] transition-colors">
-                                                                    <span className="font-mono text-xs text-teal/50 mt-1 select-none">
-                                                                        {(stepIndex + 1).toString().padStart(2, '0')}
-                                                                    </span>
-                                                                    <span className="text-sm text-slate/70 dark:text-slate/30 font-mono flex-1 leading-relaxed">
-                                                                        {step}
-                                                                    </span>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+                                    {/* Watermark/Icon */}
+                                    <div className="absolute -bottom-10 -right-10 opacity-[0.03] rotate-12">
+                                        <Cpu className="w-64 h-64" />
+                                    </div>
                                 </motion.div>
-                            );
-                        })}
+                            )}
+                        </AnimatePresence>
+
+                        {/* Summary Section Below */}
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                            className="mt-8 p-8 bg-charcoal/[0.02] dark:bg-white/[0.02] border border-dashed border-charcoal/10 dark:border-white/10 rounded-[2rem]"
+                        >
+                            <h4 className="font-serif text-lg mb-2 flex items-center gap-2">
+                                <History className="w-4 h-4 text-slate/40" />
+                                Executive Remediation Summary
+                            </h4>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 font-serif italic leading-relaxed">
+                                {executiveSummary}
+                            </p>
+                        </motion.div>
                     </div>
-                </motion.section>
+                </div>
 
-                {/* Executive Summary */}
-                <motion.section
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                    className="bg-white dark:bg-[#151515] border border-charcoal/10 dark:border-white/10 rounded-sm p-8 space-y-4"
-                >
-                    <div>
-                        <h2 className="font-serif text-3xl text-teal dark:text-parchment mb-2">Executive Summary</h2>
-                        <p className="text-xs font-mono uppercase tracking-widest text-amber-500">
-                            Generated by JurAI Auto-Fix
-                        </p>
+                {/* Final Actions */}
+                <div className="mt-20 flex flex-col items-center space-y-8">
+                    <div className="h-px w-32 bg-teal/20" />
+                    <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                        <button className="flex items-center justify-center gap-3 px-8 py-4 bg-white dark:bg-[#151515] border-2 border-charcoal/5 dark:border-white/5 rounded-2xl hover:border-teal/30 transition-all font-serif">
+                            <Download className="w-5 h-5 text-teal" />
+                            Download Compliance Log
+                        </button>
+                        <Link 
+                            href="/" 
+                            className="flex items-center justify-center gap-3 px-8 py-4 bg-teal text-white rounded-2xl hover:scale-105 transition-all font-serif shadow-xl shadow-teal/20"
+                        >
+                            <Home className="w-5 h-5" />
+                            Return Command
+                            <ChevronRight className="w-5 h-5" />
+                        </Link>
                     </div>
-
-                    <div className="space-y-4">
-                        <p className="text-sm text-slate/70 dark:text-slate/40 leading-relaxed font-light">
-                            {executiveSummary}
-                        </p>
-                    </div>
-                </motion.section>
-
-                {/* Footer Actions */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8"
-                >
-                    <button
-                        className="inline-flex items-center justify-center px-8 py-4 bg-white dark:bg-[#151515] border border-charcoal/10 dark:border-white/10 text-charcoal dark:text-parchment font-medium rounded-sm hover:bg-charcoal/5 dark:hover:bg-white/5 transition-all w-full sm:w-auto"
-                        onClick={() => alert("Coming soon!")}
-                    >
-                        <Download className="w-5 h-5 mr-2" />
-                        Export JIRA Tickets
-                    </button>
-
-                    <Link
-                        href="/"
-                        className="inline-flex items-center justify-center px-8 py-4 bg-teal text-parchment font-serif text-lg rounded-sm shadow-xl hover:shadow-teal/30 transition-all duration-500 group w-full sm:w-auto"
-                    >
-                        <Home className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                        Return Home
-                    </Link>
-                </motion.div>
+                </div>
             </main>
         </div>
     );

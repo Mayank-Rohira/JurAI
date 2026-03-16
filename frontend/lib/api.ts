@@ -24,6 +24,17 @@ export interface PipelineResult {
     [key: string]: any;
 }
 
+export interface ChatMessage {
+    role: "system" | "user" | "assistant";
+    content: string;
+}
+
+export interface ChatRequest {
+    messages: ChatMessage[];
+    system_prompt: string;
+}
+
+
 // --- API Client ---
 export const api = {
     auth: {
@@ -84,6 +95,20 @@ export const api = {
             });
             if (!response.ok) {
                 throw new Error("Failed to run autofix");
+            }
+            return response.json();
+        }
+    },
+    ai: {
+        chat: async (request: ChatRequest): Promise<{ content: string }> => {
+            const response = await fetch(`${API_BASE_URL}/ai/chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(request),
+            });
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({ detail: "AI chat failed" }));
+                throw new Error(err.detail || "AI chat failed");
             }
             return response.json();
         }

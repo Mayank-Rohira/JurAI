@@ -1,9 +1,12 @@
 import os
-from langchain_huggingface import HuggingFaceEmbeddings
+from dotenv import load_dotenv
+load_dotenv()
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 
 def get_embedding_function():
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    # Uses GEMINI_API_KEY from environment (loaded in app.py)
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
     return embeddings
 
 def get_vector_store(collection_name: str = "jurai_rag", persist_directory: str = "./chroma_db"):

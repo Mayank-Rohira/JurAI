@@ -87,7 +87,7 @@ export default function ProfilePage() {
                     </div>
                     <div>
                         <h2 className="font-serif text-2xl text-teal dark:text-parchment">{MOCK_USER.name}</h2>
-                        <p className="text-sm text-slate/50 font-mono uppercase tracking-widest">{MOCK_USER.email}</p>
+                        <p className="text-sm text-slate/50 font-bold uppercase tracking-widest">{MOCK_USER.email}</p>
                     </div>
                 </section>
 
@@ -99,7 +99,7 @@ export default function ProfilePage() {
                 >
                     {/* Personal Information */}
                     <section className="space-y-4">
-                        <h3 className="text-[10px] font-mono uppercase tracking-[0.2em] text-gold px-1">Personal Information</h3>
+                        <h3 className="text-[10px] uppercase tracking-[0.2em] text-gold px-1 font-bold">Personal Information</h3>
                         <div className="bg-white dark:bg-[#151515] border border-charcoal/5 dark:border-white/5 rounded-sm divide-y divide-charcoal/5 dark:divide-white/5">
                             <div className="p-4 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -128,8 +128,8 @@ export default function ProfilePage() {
                     {/* Activity / History */}
                     <section className="space-y-4">
                         <div className="flex items-center justify-between px-1">
-                            <h3 className="text-[10px] font-mono uppercase tracking-[0.2em] text-gold">Compliance History</h3>
-                            <Link href="/history" className="text-[10px] font-mono uppercase text-teal hover:underline">View All</Link>
+                            <h3 className="text-[10px] uppercase tracking-[0.2em] text-gold font-bold">Compliance History</h3>
+                            <Link href="/history" className="text-[10px] uppercase text-teal hover:underline font-bold">View All</Link>
                         </div>
                         <div className="space-y-3">
                             {MOCK_REVIEWS.map((review) => (
@@ -143,7 +143,7 @@ export default function ProfilePage() {
                                         </div>
                                         <div>
                                             <h4 className="text-sm font-medium group-hover:text-teal transition-colors">{review.name}</h4>
-                                            <p className="text-[10px] text-slate/40 font-mono uppercase">{review.id} • {review.date}</p>
+                                            <p className="text-[10px] text-slate/40 uppercase font-bold">{review.id} • {review.date}</p>
                                         </div>
                                     </div>
                                     <ChevronRight className="w-4 h-4 text-slate/20 group-hover:text-teal transition-colors" />
@@ -154,7 +154,7 @@ export default function ProfilePage() {
 
                     {/* Account Settings */}
                     <section className="space-y-4">
-                        <h3 className="text-[10px] font-mono uppercase tracking-[0.2em] text-gold px-1">Account Settings</h3>
+                        <h3 className="text-[10px] uppercase tracking-[0.2em] text-gold px-1 font-bold">Account Settings</h3>
                         <div className="bg-white dark:bg-[#151515] border border-charcoal/5 dark:border-white/5 rounded-sm overflow-hidden">
                             {[
                                 { icon: Bell, label: "Notifications", color: "text-teal/60" },
@@ -178,7 +178,7 @@ export default function ProfilePage() {
                             <LogOut className="w-4 h-4" />
                             Log Out
                         </button>
-                        <button className="w-full p-4 flex items-center justify-center gap-2 text-red-500/60 hover:text-red-500 transition-colors text-xs font-mono uppercase tracking-widest">
+                        <button className="w-full p-4 flex items-center justify-center gap-2 text-red-500/60 hover:text-red-500 transition-colors text-xs uppercase tracking-widest font-bold">
                             <Trash2 className="w-3 h-3" />
                             Delete Account
                         </button>

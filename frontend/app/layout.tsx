@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "Detect legal risks before you build with JurAI's judicial intelligence system.",
 };
 
+import { AuthProvider } from "@/lib/auth";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,7 +36,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 import logging
 import json
 import uuid
@@ -39,7 +41,9 @@ logger = logging.getLogger(__name__)
 # --- CORS Configuration ---
 origins = [
     "http://localhost:3000",
+    "http://localhost:3001",
     "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
     "http://localhost:8000",
     "*" 
 ]
@@ -86,10 +90,15 @@ class AutofixRequest(BaseModel):
     feature_id: str
     run_id: str
 
-class UserCreate(BaseModel):
-    username: str
-    email: EmailStr
     password: str
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: list[ChatMessage]
+    system_prompt: str
 
 # --- Auth Routes ---
 
@@ -132,9 +141,26 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-    # Original Logic (Disabled)
     # user = db.users.find_one({"username": form_data.username})
     # if not user: ...
+
+@app.post("/ai/chat")
+async def ai_chat(request: ChatRequest):
+    """
+    Proxy route for the dynamic questionnaire.
+    Calls Gemini on behalf of the frontend so the API key stays server-side.
+    Never expose GEMINI_API_KEY to the browser.
+    """
+    import litellm
+    full_messages = [{"role": "system", "content": request.system_prompt}] + request.messages
+    response = litellm.completion(
+        model="gemini/gemini-flash-latest",
+        messages=full_messages,
+        api_key=os.getenv("GEMINI_API_KEY"),
+        max_tokens=400
+    )
+    return {"content": response.choices[0].message.content}
+
 
 # --- Admin/Test Routes ---
 

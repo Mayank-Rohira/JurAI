@@ -146,7 +146,7 @@ export default function ResultsPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-slate/50">Compliance Report</span>
+                    <span className="text-[10px] uppercase tracking-widest text-slate/50 font-bold">Compliance Report</span>
                 </div>
             </header>
 
@@ -161,7 +161,7 @@ export default function ResultsPage() {
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal/5 border border-teal/20 rounded-full mb-4">
                         <Shield className="w-4 h-4 text-teal" />
-                        <span className="text-xs font-mono uppercase tracking-widest text-teal">Analysis Complete</span>
+                        <span className="text-xs uppercase tracking-widest text-teal font-bold">Analysis Complete</span>
                     </div>
                     <h1 className="font-serif text-5xl md:text-6xl text-teal dark:text-parchment tracking-tight">
                         Recommended Compliance Fixes
@@ -181,7 +181,7 @@ export default function ResultsPage() {
                 >
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="font-serif text-2xl text-teal dark:text-parchment">Identified Issues</h2>
-                        <span className="text-sm text-slate/50 font-mono">{SAMPLE_ISSUES.length} items</span>
+                        <span className="text-sm text-slate/50 font-bold">{SAMPLE_ISSUES.length} items</span>
                     </div>
 
                     <div className="space-y-3">
@@ -204,7 +204,7 @@ export default function ResultsPage() {
                                     >
                                         <div className="flex items-center gap-4 flex-1 text-left">
                                             {/* Risk Badge */}
-                                            <div className={cn("px-3 py-1 rounded-full border text-xs font-mono uppercase tracking-wider", colors.badge)}>
+                                            <div className={cn("px-3 py-1 rounded-full border text-xs uppercase tracking-wider font-bold", colors.badge)}>
                                                 {issue.severity}
                                             </div>
 
@@ -243,7 +243,7 @@ export default function ResultsPage() {
                                                     <div>
                                                         <div className="flex items-center gap-2 mb-3">
                                                             <AlertCircle className={cn("w-4 h-4", colors.icon)} />
-                                                            <h4 className="text-xs font-mono uppercase tracking-widest text-teal">
+                                                            <h4 className="text-xs uppercase tracking-widest text-teal font-bold">
                                                                 Why This Is A Problem
                                                             </h4>
                                                         </div>
@@ -256,7 +256,7 @@ export default function ResultsPage() {
                                                     <div>
                                                         <div className="flex items-center gap-2 mb-3">
                                                             <CheckCircle2 className="w-4 h-4 text-teal" />
-                                                            <h4 className="text-xs font-mono uppercase tracking-widest text-teal">
+                                                            <h4 className="text-xs uppercase tracking-widest text-teal font-bold">
                                                                 Recommended Fix
                                                             </h4>
                                                         </div>
@@ -269,7 +269,7 @@ export default function ResultsPage() {
                                                     <div>
                                                         <div className="flex items-center gap-2 mb-3">
                                                             <FileText className="w-4 h-4 text-teal" />
-                                                            <h4 className="text-xs font-mono uppercase tracking-widest text-teal">
+                                                            <h4 className="text-xs uppercase tracking-widest text-teal font-bold">
                                                                 Implementation Steps
                                                             </h4>
                                                         </div>
@@ -303,14 +303,14 @@ export default function ResultsPage() {
                 >
                     <div>
                         <h2 className="font-serif text-3xl text-teal dark:text-parchment mb-2">Executive Summary</h2>
-                        <p className="text-xs font-mono uppercase tracking-widest text-gold">
+                        <p className="text-xs uppercase tracking-widest text-gold font-bold">
                             Generated by JurAI Intelligence
                         </p>
                     </div>
 
                     {/* What JurAI Understood */}
                     <div className="space-y-4">
-                        <h3 className="text-sm font-mono uppercase tracking-widest text-teal border-b border-charcoal/5 dark:border-white/5 pb-2">
+                        <h3 className="text-sm uppercase tracking-widest text-teal border-b border-charcoal/5 dark:border-white/5 pb-2 font-bold">
                             What JurAI Understood
                         </h3>
                         <p className="text-sm text-slate/70 dark:text-slate/40 leading-relaxed font-light">
@@ -324,7 +324,7 @@ export default function ResultsPage() {
 
                     {/* Compliance Issues Identified */}
                     <div className="space-y-4">
-                        <h3 className="text-sm font-mono uppercase tracking-widest text-teal border-b border-charcoal/5 dark:border-white/5 pb-2">
+                        <h3 className="text-sm uppercase tracking-widest text-teal border-b border-charcoal/5 dark:border-white/5 pb-2 font-bold">
                             Compliance Issues Identified
                         </h3>
                         <div className="space-y-3">
@@ -335,7 +335,7 @@ export default function ResultsPage() {
                                         <span className="text-sm text-slate/70 dark:text-slate/40 font-light">
                                             {issue.title}
                                         </span>
-                                        <div className={cn("px-2 py-1 rounded-full border text-[10px] font-mono uppercase tracking-wider", colors.badge)}>
+                                        <div className={cn("px-2 py-1 rounded-full border text-[10px] uppercase tracking-wider font-bold", colors.badge)}>
                                             {issue.severity}
                                         </div>
                                     </div>

@@ -12,116 +12,70 @@ import {
     Activity,
     Brain,
     Clock,
-    BookOpen,
     ScrollText,
     Search,
-    Users,
     Hammer,
-    Sparkles,
-    Zap,
-    Target,
-    Award,
-    LineChart,
     Home,
-    User,
-    Settings
+    ArrowLeft
 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { api, API_BASE_URL } from "@/lib/api";
+import { getFeature, saveFeature, FeatureContext, updateStage } from "@/lib/context";
 
-// --- Navigation Component ---
-function Navigation() {
-    return (
-        <motion.nav
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.8, ease: "circOut" }}
-            className="fixed top-0 w-full z-50 bg-parchment/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md border-b border-charcoal/5 dark:border-white/5 px-6 py-4 flex justify-between items-center"
-        >
-            <div className="flex items-center gap-8">
-                <Link href="/" className="flex items-center gap-2 group cursor-pointer">
-                    <div className="relative">
-                        <Scale className="w-6 h-6 text-teal transition-transform group-hover:rotate-12" />
-                        <motion.div
-                            className="absolute -top-1 -right-1 w-2 h-2 bg-gold rounded-full"
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ repeat: Infinity, duration: 2 }}
-                        />
-                    </div>
-                    <span className="font-serif text-xl font-bold tracking-tight text-teal dark:text-parchment">JurAI</span>
-                </Link>
-            </div>
-
-            <div className="flex items-center gap-3">
-                <Link
-                    href="/"
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate/70 dark:text-slate/40 hover:text-teal dark:hover:text-teal hover:bg-teal/5 rounded-sm transition-all"
-                >
-                    <Home className="w-4 h-4" />
-                    <span className="hidden sm:inline">Home</span>
-                </Link>
-                <div className="flex items-center gap-1">
-                    <ThemeToggle />
-                </div>
-            </div>
-        </motion.nav>
-    );
-}
-
-// Three agents with detailed roles
+// --- Agents ---
 const AGENTS = [
     {
-        name: "Regulation Detective",
-        title: "Juror",
+        name: "Regulatory Advisor",
+        title: "Compliance",
         icon: Shield,
         id: "REG-001",
         color: "text-blue-500",
         bgColor: "bg-blue-500/10",
         borderColor: "border-blue-500/20",
-        ringColor: "ring-blue-500/20",
         position: { x: "left-8", y: "top-8" },
-        role: "Analyzes regulatory compliance with GDPR, CCPA, and other data protection laws"
+        role: "Analyzes regulatory compliance with GDPR, CCPA, and more."
     },
     {
-        name: "Design Counsel",
-        title: "Critic",
+        name: "Design Reviewer",
+        title: "UX Ethics",
         icon: Scale,
         id: "CRT-009",
         color: "text-purple-500",
         bgColor: "bg-purple-500/10",
         borderColor: "border-purple-500/20",
-        ringColor: "ring-purple-500/20",
         position: { x: "right-8", y: "top-8" },
-        role: "Reviews UI/UX for dark patterns, accessibility issues, and deceptive practices"
+        role: "Reviews for unethical dark patterns and deceptive practices."
     },
     {
-        name: "Compliance Validator",
-        title: "Judge",
+        name: "Compliance Lead",
+        title: "Lead Counsel",
         icon: Gavel,
         id: "JDG-100",
         color: "text-teal",
         bgColor: "bg-teal/10",
         borderColor: "border-teal/20",
-        ringColor: "ring-teal/20",
         position: { x: "left-1/2", y: "top-8" },
-        role: "Evaluates all evidence and delivers final legal verdict"
+        role: "Delivers final compliance review."
     },
 ];
 
 export default function AnalysisPage() {
-    const [analyzing, setAnalyzing] = useState(true);
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const featureId = searchParams.get("feature_id");
+    
+    const [feature, setFeature] = useState<FeatureContext | null>(null);
+    const [analyzing, setAnalyzing] = useState(false);
     const [activeThinker, setActiveThinker] = useState<string | null>(null);
-    const [currentReport, setCurrentReport] = useState<string | null>("Initializing System...");
+    const [currentStatus, setCurrentStatus] = useState("Initializing System...");
     const [agentThoughts, setAgentThoughts] = useState<{ [key: string]: string[] }>({
         "REG-001": [],
         "CRT-009": [],
         "JDG-100": []
     });
-
-    // Track expanded state for clicking agents
-    const [expandedAgents, setExpandedAgents] = useState<Set<string>>(new Set());
 
     const thoughtRefs = {
         "REG-001": useRef<HTMLDivElement>(null),
@@ -129,425 +83,298 @@ export default function AnalysisPage() {
         "JDG-100": useRef<HTMLDivElement>(null)
     };
 
-    // Helper to map backend agent names to frontend IDs
     const getAgentIdFromName = (name: string) => {
         if (name.includes("Jury") || name.includes("Primary")) return "REG-001";
         if (name.includes("Critic") || name.includes("Reviewer")) return "CRT-009";
         if (name.includes("Judge")) return "JDG-100";
-        return "REG-001"; // Default
+        return "REG-001";
     };
 
-    // Auto-scroll logic
     useEffect(() => {
-        if (activeThinker && thoughtRefs[activeThinker as keyof typeof thoughtRefs]?.current) {
-            const thoughtBox = thoughtRefs[activeThinker as keyof typeof thoughtRefs].current;
-            if (thoughtBox) {
-                thoughtBox.scrollTop = thoughtBox.scrollHeight;
-            }
+        if (!featureId) {
+            router.push("/dashboard");
+            return;
         }
-    }, [agentThoughts, activeThinker]);
 
-    // --- MAIN PIPELINE LOGIC ---
-    useEffect(() => {
-        let isMounted = true;
-        const searchParams = new URLSearchParams(window.location.search);
-        const runId = searchParams.get("run_id");
-        const featureId = searchParams.get("feature_id");
-        const pipelineContext = localStorage.getItem("pipeline_context");
+        const data = getFeature(featureId);
+        if (!data) {
+            router.push("/dashboard");
+            return;
+        }
+        setFeature(data);
 
-        const init = async () => {
-            // 1. STREAMING MODE (New Analysis) - Triggered when context exists
-            if (pipelineContext && !runId) {
-                try {
-                    const contextData = JSON.parse(pipelineContext);
-                    // REMOVED: localStorage.removeItem("pipeline_context"); -- Moved to "done" event to support StrictMode remounts
+        // If stage is 1 (Intake done) and not already analyzing, start it
+        if (data.current_stage === 1 && !analyzing) {
+            startAnalysis(data);
+        } else if (data.current_stage >= 2 && data.legal_review?.run_id) {
+            // Already analyzed, load results
+            setAnalyzing(false);
+            setCurrentStatus("Analysis complete.");
+            loadExistingResults(data);
+        }
+    }, [featureId]);
 
-                    // Start the stream
-                    const response = await fetch(`${API_BASE_URL}/stream/pipeline`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(contextData)
-                    });
+    const loadExistingResults = async (f: FeatureContext) => {
+        if (!f.legal_review?.run_id) return;
+        try {
+            const result = await api.pipeline.getResults(f.feature_id, f.legal_review.run_id);
+             if (result.agent_trace && Array.isArray(result.agent_trace)) {
+                const thoughts: any = { "REG-001": [], "CRT-009": [], "JDG-100": [] };
+                result.agent_trace.forEach((traceItem: any) => {
+                    const agentId = getAgentIdFromName(traceItem.agent);
+                    if (traceItem.logs) thoughts[agentId].push(...traceItem.logs);
+                });
+                setAgentThoughts(thoughts);
+            }
+        } catch (e) {
+            console.error("Failed to load existing results", e);
+        }
+    };
 
-                    if (!response.body) throw new Error("No stream body");
+    const startAnalysis = async (f: FeatureContext) => {
+        setAnalyzing(true);
+        setCurrentStatus("Gathering context for the Jury...");
 
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder();
-                    let buffer = "";
+        try {
+            // Context for the backend pipeline
+            const contextData = {
+                feature_name: f.feature_name,
+                collected_data: f.intake.collected,
+                summary: f.intake.summary,
+            };
 
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
+            const response = await fetch(`${API_BASE_URL}/stream/pipeline`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(contextData)
+            });
 
-                        buffer += decoder.decode(value, { stream: true });
-                        let lines = buffer.split("\n");
-                        // Keep the last partial line in buffer
-                        buffer = lines.pop() || "";
+            if (!response.body) throw new Error("No stream body");
 
-                        let currentEventType = "message"; // default
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
 
-                        for (const line of lines) {
-                            const trimmedLine = line.trim();
-                            if (!trimmedLine) continue;
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
 
-                            if (trimmedLine.startsWith("event:")) {
-                                currentEventType = trimmedLine.substring(6).trim();
-                            } else if (trimmedLine.startsWith("data:")) {
-                                const dataStr = trimmedLine.substring(5).trim();
+                buffer += decoder.decode(value, { stream: true });
+                let lines = buffer.split("\n");
+                buffer = lines.pop() || "";
 
-                                try {
-                                    // Handle Events based on type
-                                    if (currentEventType === "done") {
-                                        // PIPELINE COMPLETE -> TRIGGER AUTOFIX -> SHOW BUTTON
-                                        if (isMounted) setCurrentReport("Analysis pipeline complete. Generating fixes...");
+                let currentEventType = "message";
 
-                                        localStorage.removeItem("pipeline_context"); // Consume context now that we are done
+                for (const line of lines) {
+                    const trimmedLine = line.trim();
+                    if (!trimmedLine) continue;
 
-                                        const payload = JSON.parse(dataStr);
-                                        // Trigger Autofix in background
-                                        // We use the run_id returned by the stream or generate one
-                                        const finalRunId = payload.run_id || payload.feature_id; // Just using something to reference
+                    if (trimmedLine.startsWith("event:")) {
+                        currentEventType = trimmedLine.substring(6).trim();
+                    } else if (trimmedLine.startsWith("data:")) {
+                        const dataStr = trimmedLine.substring(5).trim();
 
-                                        if (payload.feature_id && payload.run_id) {
-                                            // We can optionally explicitly run autofix if the backend hasn't run it yet.
-                                            // Our stream pipeline actually calls risk/diff, but DOES NOT explicitly call autofix pipeline (Run Autofix usually separate). 
-                                            // Let's call it to be sure it's ready for next screen.
-                                            await api.pipeline.runAutofix(payload.feature_id, payload.run_id);
-
-                                            // Update URL with real IDs so user can refresh if needed
-                                            const newUrl = `${window.location.pathname}?run_id=${payload.run_id}&feature_id=${payload.feature_id}`;
-                                            window.history.replaceState({}, '', newUrl);
-                                        }
-
-                                        if (isMounted) setAnalyzing(false); // <--- THIS SHOWS THE BUTTON
-                                        return;
-                                    }
-                                    else if (currentEventType === "status") {
-                                        // Generic status update
-                                        const msg = dataStr.startsWith('"') ? JSON.parse(dataStr) : dataStr;
-                                        if (isMounted) setCurrentReport(msg);
-                                    }
-                                    else if (currentEventType === "error") {
-                                        console.error("Stream Error:", dataStr);
-                                        if (isMounted) setCurrentReport("Error: " + dataStr);
-                                        // Might want to stop analysis or show error state
-                                        if (isMounted) setAnalyzing(false);
-                                    }
-                                    else if (currentEventType === "diff" || currentEventType === "risk") {
-                                        // These are background results, just ignore for UI stream, 
-                                        // or update report text
-                                        if (isMounted) setCurrentReport(`Processing ${currentEventType} analysis...`);
-                                    }
-                                    else if (
-                                        currentEventType === "jury_thinking" ||
-                                        currentEventType === "critic_thinking" ||
-                                        currentEventType === "judge_thinking"
-                                    ) {
-                                        // Parse Log
-                                        const payload = JSON.parse(dataStr);
-                                        const msg = payload.msg || payload;
-                                        const isLog = payload.is_log;
-
-                                        // Determine Agent
-                                        let agentName = "System";
-                                        if (currentEventType.includes("jury")) agentName = "Jury_Primary";
-                                        else if (currentEventType.includes("critic")) agentName = "Critic_Reviewer";
-                                        else if (currentEventType.includes("judge")) agentName = "Judge";
-
-                                        const agentId = getAgentIdFromName(agentName);
-
-                                        // Update UI State
-                                        if (isMounted) {
-                                            setActiveThinker(agentId);
-
-                                            if (isLog) {
-                                                // It's a thought trace
-                                                setAgentThoughts(prev => ({
-                                                    ...prev,
-                                                    [agentId]: [...(prev[agentId] || []), typeof msg === 'string' ? msg : JSON.stringify(msg)]
-                                                }));
-                                            } else {
-                                                // It's a high level status message being emitted by agent
-                                                setCurrentReport(typeof msg === 'string' ? msg : JSON.stringify(msg));
-                                            }
-                                        }
-                                    }
-                                    else if (currentEventType === "jury_report" || currentEventType === "critic_feedback" || currentEventType === "judge_verdict") {
-                                        // Use these major milestones to update the central report text
-                                        const payload = JSON.parse(dataStr);
-                                        if (currentEventType === "jury_report") {
-                                            if (isMounted) setCurrentReport("Jury has submitted a preliminary report.");
-                                        } else if (currentEventType === "critic_feedback") {
-                                            if (isMounted) setCurrentReport("Critic is reviewing the findings...");
-                                        } else if (currentEventType === "judge_verdict") {
-                                            if (isMounted) setCurrentReport("Judge has finalized the verdict.");
-                                        }
-                                    }
-                                } catch (e) { console.error("Stream parse error", e); }
+                        try {
+                            if (currentEventType === "done") {
+                                const payload: any = JSON.parse(dataStr);
+                                finalizeAnalysis(f.feature_id, payload);
+                                return;
+                            } else if (currentEventType === "status") {
+                                setCurrentStatus(JSON.parse(dataStr) as string);
+                            } else if (currentEventType.includes("_thinking")) {
+                                const payload: any = JSON.parse(dataStr);
+                                const agentId = getAgentIdFromName(currentEventType);
+                                setActiveThinker(agentId);
+                                if (payload.is_log) {
+                                    setAgentThoughts(prev => ({
+                                        ...prev,
+                                        [agentId]: [...prev[agentId], payload.msg]
+                                    }));
+                                }
                             }
-                        }
-                    }
-                } catch (e) {
-                    console.error("Streaming failed", e);
-                    if (isMounted) {
-                        setAnalyzing(false); // Fail safe to show button
-                        setCurrentReport("Connection failed. Please check backend.");
+                        } catch (e) { console.error("Parse error", e); }
                     }
                 }
-                return;
             }
+        } catch (e) {
+            console.error("Stream failed", e);
+            setAnalyzing(false);
+            setCurrentStatus("Analysis failed. System connection error.");
+        }
+    };
 
-            // 2. FETCH MODE (Existing Run) - If user refreshes or comes back
-            if (runId && featureId) {
-                try {
-                    const result = await api.pipeline.getResults(featureId, runId);
-                    // If we have a verdict or status is complete, stop analyzing
-                    if (result.verdict || result.status === "CORE_COMPLETED" || result.status === "AUTOFIX_COMPLETED" || result.status === "RISK_COMPLETED") {
-                        if (isMounted) {
-                            setAnalyzing(false); // <--- THIS SHOWS THE BUTTON
-                            setCurrentReport("Analysis complete. Verdict available.");
-
-                            // Load existing traces if available
-                            if (result.agent_trace && Array.isArray(result.agent_trace)) {
-                                const thoughts: any = { "REG-001": [], "CRT-009": [], "JDG-100": [] };
-                                result.agent_trace.forEach((traceItem: any) => {
-                                    const agentId = getAgentIdFromName(traceItem.agent);
-                                    if (traceItem.logs) {
-                                        thoughts[agentId].push(...traceItem.logs);
-                                    } else if (traceItem.content) {
-                                        // If no granular logs, use content steps
-                                        thoughts[agentId].push(traceItem.step + ": " + (typeof traceItem.content === 'string' ? traceItem.content.substring(0, 100) + "..." : ""));
-                                    }
-                                });
-                                setAgentThoughts(thoughts);
-                            }
-                        }
-                    } else {
-                        // If still processing (IN_PROGRESS), implies we missed the stream start
-                        // We could poll here, but for now just show Waiting 
-                        if (isMounted) setCurrentReport("Analysis in progress (Background)...");
-                        // Ideally we would SSE stream attach to existing run, but our backend SSE starts new run.
-                        // So we just wait or show button to refresh.
-                        setTimeout(() => {
-                            if (isMounted) setAnalyzing(false);
-                        }, 3000);
-                    }
-                } catch (e) {
-                    console.error("Fetch failed", e);
-                    if (isMounted) setAnalyzing(false);
-                }
-                return;
+    const finalizeAnalysis = (fid: string, payload: any) => {
+        setAnalyzing(false);
+        setCurrentStatus("Analysis complete.");
+        
+        // Save to FeatureContext
+        saveFeature(fid, {
+            current_stage: 2,
+            legal_review: {
+                run_id: payload.run_id,
+                verdict: payload.verdict,
+                risk_assessment: payload.risk,
+                submitted_at: new Date().toISOString(),
+                approved: false
             }
-
-            // 3. Fallback / Idle
-            if (isMounted) {
-                // No context, no runID. Just idle.
-                setAnalyzing(false);
-                setCurrentReport("Ready for analysis.");
-            }
-        };
-
-        init();
-        return () => { isMounted = false; };
-    }, []); // Run once on mount
-
-    // --- Helpers ---
-    const getAgentById = (id: string) => AGENTS.find(agent => agent.id === id);
-    const getAgentThoughts = (agentId: string) => agentThoughts[agentId] || [];
-
-    const handleAgentClick = (agentId: string) => {
-        setExpandedAgents(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(agentId)) newSet.delete(agentId);
-            else newSet.add(agentId);
-            return newSet;
         });
-    };
 
-    const shouldShowThinkBox = (agentId: string) => {
-        if (activeThinker === agentId) return true;
-        if (expandedAgents.has(agentId)) return true;
-        if (!analyzing && getAgentThoughts(agentId).length > 0) return true; // Show results after done
-        return false;
-    };
-
-    const renderThinkBoxContent = (agentId: string) => {
-        const thoughts = getAgentThoughts(agentId);
-        if (thoughts.length === 0) {
-            return (
-                <div className="text-center text-slate-400 dark:text-slate-500 py-8">
-                    <Brain className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                    <p className="text-sm">Waiting for {getAgentById(agentId)?.title}...</p>
-                </div>
-            );
-        }
-        return (
-            <div className="space-y-1.5">
-                {thoughts.map((thought, index) => (
-                    <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="text-xs leading-relaxed pl-3 border-l-2 border-teal/30 text-slate-600 dark:text-slate-400 font-mono"
-                    >
-                        {thought}
-                    </motion.div>
-                ))}
-            </div>
-        );
+        // Trigger autofix in background
+        api.pipeline.runAutofix(fid, payload.run_id);
     };
 
     return (
-        <div className="min-h-screen bg-parchment dark:bg-[#0A0A0A] text-charcoal dark:text-parchment flex flex-col">
-            <Navigation />
+        <div className="min-h-screen bg-parchment dark:bg-[#0A0A0A] text-charcoal dark:text-parchment font-sans pb-20">
+            {/* Header */}
+            <header className="px-6 py-4 border-b border-charcoal/5 dark:border-white/5 flex justify-between items-center bg-parchment/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md sticky top-0 z-50">
+                <div className="flex items-center gap-6">
+                    <Link href="/dashboard" className="p-2 hover:bg-charcoal/5 dark:hover:bg-white/5 rounded-lg transition-colors">
+                        <ArrowLeft className="w-5 h-5 text-slate/50" />
+                    </Link>
+                    <div className="h-4 w-px bg-charcoal/10 dark:bg-white/10" />
+                    <div className="flex items-center gap-2">
+                        <Scale className="w-5 h-5 text-teal" />
+                        <h1 className="font-serif text-lg font-bold text-teal dark:text-parchment line-clamp-1">{feature?.feature_name}</h1>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    <Link 
+                        href={`/report?feature_id=${featureId}`}
+                        className="flex items-center gap-2 px-4 py-2 bg-charcoal dark:bg-parchment text-white dark:text-black rounded-lg hover:scale-105 transition-all text-sm font-bold shadow-xl"
+                    >
+                        <FileText className="w-4 h-4" />
+                        GENERATE REPORT
+                    </Link>
+                    <ThemeToggle />
+                </div>
+            </header>
 
-            {/* Status Banner */}
-            <div className="fixed top-20 left-0 right-0 z-40 flex justify-center px-6">
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={cn(
-                        "flex items-center gap-2 px-4 py-2 backdrop-blur-sm rounded-full border shadow-lg transition-colors",
-                        analyzing
-                            ? "bg-white/90 dark:bg-[#151515]/90 border-teal/20"
-                            : "bg-teal/10 border-teal/50"
-                    )}
-                >
-                    <Activity className={cn("w-4 h-4 text-teal", analyzing ? "animate-pulse" : "")} />
-                    <span className="text-xs font-mono uppercase tracking-wider text-teal">
-                        {analyzing ? "Court in Session..." : "Verdict Reached"}
-                    </span>
-                </motion.div>
-            </div>
+            <main className="max-w-7xl mx-auto px-6 pt-24">
+                {/* Status Indicator */}
+                <div className="flex justify-center mb-16">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={cn(
+                            "px-6 py-3 rounded-full border flex items-center gap-3 shadow-xl backdrop-blur-md transition-all duration-500",
+                            analyzing ? "bg-white/80 dark:bg-[#151515]/80 border-teal/20" : "bg-teal text-white border-transparent"
+                        )}
+                    >
+                        {analyzing ? (
+                            <>
+                                <Activity className="w-4 h-4 text-teal animate-pulse" />
+                                <span className="text-sm uppercase tracking-[0.2em] text-teal">Analysis in Progress...</span>
+                            </>
+                        ) : (
+                            <>
+                                <CheckCircle2 className="w-4 h-4" />
+                                <span className="text-sm uppercase tracking-[0.2em]">Analysis Complete</span>
+                            </>
+                        )}
+                    </motion.div>
+                </div>
 
-            <main className="flex-1 p-4 md:p-6 pt-48 md:pt-56">
                 {/* Agents Grid */}
-                <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-8 lg:gap-16 mb-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
                     {AGENTS.map((agent) => (
-                        <div key={agent.id} className="w-full lg:w-1/3 flex flex-col items-center">
-                            <div className="relative mb-4">
+                        <div key={agent.id} className="space-y-6">
+                            <div className="flex flex-col items-center gap-4">
                                 <motion.div
-                                    onClick={() => handleAgentClick(agent.id)}
                                     animate={activeThinker === agent.id ? {
                                         scale: [1, 1.05, 1],
-                                        boxShadow: ["0 0 0px rgba(13,148,136,0)", "0 0 20px rgba(13,148,136,0.3)", "0 0 0px rgba(13,148,136,0)"]
+                                        boxShadow: ["0 0 0px rgba(13,148,136,0)", "0 0 30px rgba(13,148,136,0.3)", "0 0 0px rgba(13,148,136,0)"]
                                     } : {}}
                                     transition={{ repeat: Infinity, duration: 2 }}
                                     className={cn(
-                                        "w-20 h-20 md:w-24 md:h-24 rounded-full border-2 flex items-center justify-center transition-all duration-500 relative cursor-pointer hover:scale-105 bg-white dark:bg-[#111]",
+                                        "w-24 h-24 rounded-3xl border-2 flex items-center justify-center bg-white dark:bg-[#111] transition-all duration-500",
                                         agent.borderColor,
-                                        activeThinker === agent.id && "ring-2 ring-teal"
+                                        activeThinker === agent.id && "ring-4 ring-teal/20"
                                     )}
                                 >
-                                    <agent.icon className={cn("w-10 h-10 md:w-12 md:h-12 transition-colors duration-500", agent.color)} />
+                                    <agent.icon className={cn("w-10 h-10", agent.color)} />
+                                </motion.div>
+                                <div className="text-center">
+                                    <h3 className={cn("font-serif text-xl font-bold", agent.color)}>{agent.title}</h3>
+                                    <p className="text-[10px] uppercase tracking-widest text-slate/40">{agent.name}</p>
+                                </div>
+                            </div>
+
+                            <div className="bg-white dark:bg-[#151515] border border-charcoal/10 dark:border-white/10 rounded-2xl h-[400px] overflow-hidden flex flex-col shadow-sm">
+                                <div className="p-3 border-b border-charcoal/5 dark:border-white/5 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Brain className="w-3.5 h-3.5 text-teal" />
+                                        <span className="text-[10px] font-bold text-teal uppercase tracking-widest">Analysis Context</span>
+                                    </div>
                                     {activeThinker === agent.id && (
-                                        <div className="absolute -top-2 -right-2">
-                                            <Brain className="w-5 h-5 text-teal animate-pulse" />
+                                        <div className="flex gap-1">
+                                            <div className="w-1 h-1 rounded-full bg-teal animate-bounce" style={{ animationDelay: '0s' }} />
+                                            <div className="w-1 h-1 rounded-full bg-teal animate-bounce" style={{ animationDelay: '0.2s' }} />
+                                            <div className="w-1 h-1 rounded-full bg-teal animate-bounce" style={{ animationDelay: '0.4s' }} />
                                         </div>
                                     )}
-                                </motion.div>
-                            </div>
-
-                            <div className="text-center mb-4">
-                                <p className={cn("font-serif text-lg font-bold", agent.color)}>{agent.title}</p>
-                                <p className="text-xs font-mono uppercase tracking-tight text-slate/40">{agent.name}</p>
-                            </div>
-
-                            {/* Thinking Box */}
-                            <AnimatePresence>
-                                {shouldShowThinkBox(agent.id) && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: "auto" }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="w-full max-w-md"
-                                    >
-                                        <div className={cn(
-                                            "bg-white dark:bg-[#151515] border border-teal/20 rounded-lg shadow-lg h-64 transition-all duration-300 flex flex-col",
-                                            activeThinker === agent.id ? "ring-1 ring-teal/30" : "opacity-80"
-                                        )}>
-                                            <div className="p-3 border-b border-dashed border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center gap-2">
-                                                <Brain className="w-4 h-4 text-teal" />
-                                                <span className="text-xs font-mono font-bold text-teal uppercase">Live Trace</span>
+                                </div>
+                                <div className="flex-1 overflow-y-auto p-4 text-[11px] leading-relaxed space-y-3 custom-scrollbar">
+                                    <AnimatePresence>
+                                        {agentThoughts[agent.id].length === 0 ? (
+                                            <div className="h-full flex flex-col items-center justify-center opacity-20 select-none">
+                                                <Brain className="w-12 h-12 mb-4" />
+                                                <p>Waiting to process...</p>
                                             </div>
-                                            <div
-                                                ref={thoughtRefs[agent.id as keyof typeof thoughtRefs]}
-                                                className="flex-1 overflow-y-auto p-4 space-y-2"
-                                            >
-                                                {renderThinkBoxContent(agent.id)}
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                                        ) : (
+                                            agentThoughts[agent.id].map((thought: string, idx: number) => (
+                                                <motion.div
+                                                    key={idx}
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    className="pl-3 border-l border-teal/20 text-slate/60 dark:text-slate/40"
+                                                >
+                                                    {thought}
+                                                </motion.div>
+                                            ))
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
 
-                {/* Report & Verdict Button */}
-                <div className="max-w-4xl mx-auto mb-8 text-center space-y-8">
-                    <AnimatePresence mode="wait">
+                {/* Footer Transition */}
+                <div className="max-w-3xl mx-auto text-center space-y-12">
+                    <div className="bg-white/50 dark:bg-[#151515]/50 border border-charcoal/10 dark:border-white/10 p-6 rounded-2xl flex items-center justify-center gap-4">
+                        <ScrollText className="w-5 h-5 text-teal" />
+                        <p className="text-sm font-medium text-slate/70 dark:text-slate/30">{currentStatus}</p>
+                    </div>
+
+                    {!analyzing && (
                         <motion.div
-                            key={currentReport}
-                            initial={{ opacity: 0, y: 10 }}
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="bg-white/50 dark:bg-[#151515]/50 border border-charcoal/10 dark:border-white/10 rounded-lg p-6 shadow-sm inline-block min-w-[300px]"
+                            className="bg-white dark:bg-[#151515] border-2 border-teal p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden group"
                         >
-                            <div className="flex items-center justify-center gap-2 mb-2 text-teal">
-                                <ScrollText className="w-4 h-4" />
-                                <span className="text-xs font-bold font-mono uppercase tracking-widest">System Status</span>
-                            </div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
-                                {currentReport}
-                            </p>
-                        </motion.div>
-                    </AnimatePresence>
-
-                    {/* VIEW VERDICT BUTTON - Only shows when analyzing is FALSE */}
-                    <AnimatePresence>
-                        {!analyzing && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                transition={{ type: "spring", bounce: 0.5 }}
-                            >
-                                <div className="p-1 rounded-2xl bg-gradient-to-r from-teal/20 via-blue-500/20 to-purple-500/20 inline-block">
-                                    <div className="bg-parchment dark:bg-[#0A0A0A] rounded-xl p-8 border border-teal/20">
-                                        <div className="flex flex-col items-center gap-4">
-                                            <div className="p-3 bg-teal/10 rounded-full">
-                                                <CheckCircle2 className="w-8 h-8 text-teal" />
-                                            </div>
-                                            <h3 className="font-serif text-2xl text-teal dark:text-parchment">Deliberation Complete</h3>
-                                            <p className="text-slate-600 dark:text-slate-400 max-w-md">
-                                                The Judge has reviewed all arguments and evidence. A final verdict and remediation plan are ready.
-                                            </p>
-
-                                            <Link
-                                                href={`/verdict?run_id=${new URLSearchParams(window.location.search).get("run_id")}&feature_id=${new URLSearchParams(window.location.search).get("feature_id")}`}
-                                                className="mt-4 group relative inline-flex items-center justify-center px-12 py-4 bg-teal text-parchment font-serif text-xl rounded-lg shadow-xl hover:shadow-teal/40 transition-all duration-300 overflow-hidden"
-                                            >
-                                                <span className="relative z-10 flex items-center gap-3">
-                                                    <Hammer className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-                                                    View Final Verdict
-                                                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                                </span>
-                                                <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                                            </Link>
-                                        </div>
-                                    </div>
+                            <div className="relative z-10 space-y-6">
+                                <div className="p-4 bg-teal/10 rounded-full w-fit mx-auto">
+                                    <Hammer className="w-10 h-10 text-teal" />
                                 </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                                <h2 className="text-3xl font-serif text-teal dark:text-parchment">Analysis Complete</h2>
+                                <p className="text-slate/60 dark:text-slate/40 max-w-md mx-auto">
+                                    The JurAI analysis engine has completed its review. Review the final findings and recommendations.
+                                </p>
+                                <Link
+                                    href={`/verdict?feature_id=${featureId}`}
+                                    className="inline-flex items-center gap-4 bg-teal text-white px-10 py-5 rounded-2xl font-serif text-xl shadow-xl hover:shadow-teal/40 transition-all hover:scale-[1.02]"
+                                >
+                                    View Final Findings
+                                    <ChevronRight className="w-5 h-5" />
+                                </Link>
+                            </div>
+                            <div className="absolute top-0 right-0 p-8 opacity-5">
+                                <Scale className="w-48 h-48" />
+                            </div>
+                        </motion.div>
+                    )}
                 </div>
             </main>
-
-            {/* Background Decoration */}
-            <div className="fixed inset-0 -z-10 pointer-events-none opacity-[0.02] dark:opacity-[0.03]">
-                <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
-            </div>
         </div>
     );
 }
