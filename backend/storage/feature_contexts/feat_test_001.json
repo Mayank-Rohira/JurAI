@@ -1,0 +1,27 @@
+{
+  "feature_id": "feat_test_001",
+  "feature_name": "Test Feature",
+  "created_at": "2026-03-16T19:14:47.388590",
+  "updated_at": "2026-03-16T19:14:47.388590",
+  "current_stage": 1,
+  "stage_history": [
+    {
+      "stage": 1,
+      "name": "Idea Formation",
+      "entered_at": "2026-03-16T19:14:47.388590",
+      "status": "completed"
+    }
+  ],
+  "intake": {
+    "conversation": [],
+    "collected": {
+      "feature_name": "Test Feature"
+    },
+    "summary": "A test feature.",
+    "completed_at": "2026-03-16T19:14:47.388590"
+  },
+  "legal_review": null,
+  "revisions": [],
+  "final_verification": null,
+  "post_launch": null
+}

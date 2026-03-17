@@ -1,0 +1,117 @@
+{
+  "feature_id": "feat_1773688012841",
+  "version": "002",
+  "timestamp": "2026-03-16T19:13:32.102972",
+  "verdict": {
+    "feature": "Global Payment Gateway",
+    "needs_geo_specific_logic": true,
+    "confidence": 0.8,
+    "risk_score": 75,
+    "compliance_score": 25,
+    "summary": "The payment gateway with AI integration involves collection, storage, and processing of personal identifiers (email and phone number) which presents compliance challenges across various jurisdictions. Critical issues were identified in Europe, Asia, North America, and globally.",
+    "issues": [
+      {
+        "title": "Lack of Compliant Data Collection Mechanism",
+        "description": "Data collected without explicit consent does not meet compliance standards in various jurisdictions (e.g., GDPR Article 6).",
+        "severity": "Critical",
+        "risk_score": 50,
+        "category": "Data Privacy",
+        "impact": "Potential fines and legal penalties.",
+        "remediation": "Implement opt-in modal for user consent."
+      },
+      {
+        "title": "Inadequate Data Storage Compliance",
+        "description": "Indefinite storage of personal data does not meet compliance standards in various jurisdictions (e.g., GDPR Article 5).",
+        "severity": "High",
+        "risk_score": 20,
+        "category": "Data Privacy",
+        "impact": "Potential fines and legal penalties.",
+        "remediation": "Implement data retention policies in line with regional regulations."
+      },
+      {
+        "title": "Non-compliant AI Data Processing",
+        "description": "The use of AI without clear guidelines for handling personal data may not meet compliance standards in various jurisdictions (e.g., GDPR Article 22).",
+        "severity": "Medium",
+        "risk_score": 15,
+        "category": "Data Privacy",
+        "impact": "Potential fines and legal penalties.",
+        "remediation": "Develop AI usage guidelines that respect user privacy."
+      },
+      {
+        "title": "Lack of Localized Opt-Out Mechanisms",
+        "description": "The lack of localized opt-out mechanisms does not meet compliance standards in various jurisdictions (e.g., GDPR Article 12).",
+        "severity": "Medium",
+        "risk_score": 5,
+        "category": "Data Privacy",
+        "impact": "Potential fines and legal penalties.",
+        "remediation": "Implement localized opt-out mechanisms in compliance with regional regulations."
+      },
+      {
+        "title": "Non-compliant Data Handling in Asia",
+        "description": "The lack of compliance with the Personal Information Protection Act (PIPL) in China and the Data Protection Act (DPA) in Singapore may lead to legal issues.",
+        "severity": "Medium",
+        "risk_score": 5,
+        "category": "Data Privacy",
+        "impact": "Potential fines and legal penalties.",
+        "remediation": "Ensure compliance with PIPL in China and DPA in Singapore."
+      },
+      {
+        "title": "Non-compliant Data Handling in North America",
+        "description": "The lack of compliance with the California Consumer Privacy Act (CCPA) and Canada's Personal Information Protection and Electronic Documents Act (PIPEDA) may lead to legal issues.",
+        "severity": "Medium",
+        "risk_score": 5,
+        "category": "Data Privacy",
+        "impact": "Potential fines and legal penalties.",
+        "remediation": "Ensure compliance with CCPA in California and PIPEDA in Canada."
+      }
+    ],
+    "evidence_cited": [
+      {
+        "source": "GDPR",
+        "citation": "Regulation (EU) 2016/679 - Article 6, Article 5, Article 32",
+        "content": "Personal data shall be processed lawfully, fairly and in a transparent manner... The controller shall be responsible for, and be able to demonstrate compliance with, paragraph 1 (Principles)... The controller shall implement appropriate technical and organizational measures to ensure a level of security appropriate to the risk...",
+        "jurisdiction": "EU",
+        "frameworks": [
+          "General Data Protection Regulation"
+        ]
+      },
+      {
+        "source": "Singapore DPA",
+        "citation": "Personal Data Protection Act 2012 - Part III, Section 18, Section 24",
+        "content": "Personal data shall be accurate and the steps have to be taken to ensure that the personal data in its possession or under its control is accurate... Personal data should not be kept longer than necessary...",
+        "jurisdiction": "SG",
+        "frameworks": [
+          "Singapore Personal Data Protection Act"
+        ]
+      },
+      {
+        "source": "PIPL",
+        "citation": "Draft PRC Personal Information Protection Law - Article X",
+        "content": "The personal information controller shall take necessary measures to ensure that the personal information collected is accurate and up-to-date... The retention period for personal information must not exceed the duration specified by laws, administrative regulations, or national standards, or the duration necessary for achieving the purposes for which the personal information is collected.",
+        "jurisdiction": "CN",
+        "frameworks": [
+          "Draft Personal Information Protection Law of the People's Republic of China"
+        ]
+      },
+      {
+        "source": "CCPA",
+        "citation": "California Civil Code \u00a71798.100 et seq. - Section 1798.140, Section 1798.130",
+        "content": "Businesses collecting personal data from California residents must inform consumers about what personal information is being collected and the purposes for which it will be used... Businesses are required to provide consumers with the opportunity to opt-out of sales of their personal information.",
+        "jurisdiction": "US-CA",
+        "frameworks": [
+          "California Consumer Privacy Act"
+        ]
+      },
+      {
+        "source": "PIPEDA",
+        "citation": "Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5 - Principle 4, Principle 7",
+        "content": "The knowledge and consent of the individual are required for the collection, use, or disclosure of personal information, except where inappropriate... An organization shall protect personal information by implementing a reasonable security safeguard.",
+        "jurisdiction": "CA",
+        "frameworks": [
+          "Personal Information Protection and Electronic Documents Act"
+        ]
+      }
+    ]
+  },
+  "laws_snapshot": []
+}

@@ -30,6 +30,16 @@ from pipeline.risk_pipeline import run_risk_pipeline
 from pipeline.autofix_pipeline import run_autofix_pipeline
 from features.compliance_diff.diff_engine import generate_compliance_diff
 from features.compliance_history.history_manager import get_previous_verdict
+from features.context_store import (
+    create_feature_context,
+    get_feature_context,
+    update_feature_context,
+    advance_stage,
+    save_legal_review,
+    add_revision,
+    list_all_features
+)
+from features.timeline import build_timeline
 
 # --- App Configuration ---
 app = FastAPI(title="JurAI Compliance System")
@@ -50,9 +60,13 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
+@app.get("/")
+def read_root():
+    return {"message": "JurAI Compliance Backend is running", "status": "online"}
 
 # Include external routers
 # Include external routers
@@ -97,6 +111,19 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     messages: list[ChatMessage]
     system_prompt: str
+
+class IntakeCompleteRequest(BaseModel):
+    feature_id: str
+    feature_name: str
+    conversation: list
+    collected: Dict[str, Any]
+    summary: str
+
+class LegalReviewSaveRequest(BaseModel):
+    feature_id: str
+    run_id: str
+    verdict: Dict[str, Any]
+    risk_assessment: Dict[str, Any]
 
 # --- Auth Routes ---
 
@@ -183,6 +210,130 @@ async def ai_chat(request: ChatRequest):
         )
 
 # --- Admin/Test Routes ---
+
+# --- Context Store Routes ---
+
+@app.post("/context/intake")
+def save_intake(request: IntakeCompleteRequest):
+    """
+    Called by the frontend when the questionnaire chat completes.
+    Creates the feature context record for Stage 1.
+    """
+    context = create_feature_context(
+        feature_id=request.feature_id,
+        feature_name=request.feature_name,
+        intake_conversation=request.conversation,
+        intake_collected=request.collected,
+        intake_summary=request.summary
+    )
+    return {"status": "created", "feature_id": request.feature_id, "context": context}
+
+@app.get("/context/{feature_id}")
+def get_context(feature_id: str):
+    """Returns the full lifecycle context for a feature."""
+    context = get_feature_context(feature_id)
+    if not context:
+        raise HTTPException(status_code=404, detail=f"No context found for feature {feature_id}")
+    return context
+
+@app.get("/context")
+def list_features():
+    """Returns a summary list of all features in the system."""
+    return {"features": list_all_features()}
+
+@app.post("/context/legal-review")
+def save_legal_review_route(request: LegalReviewSaveRequest):
+    """Called after Pipeline A + B complete to save Stage 2 results into context."""
+    context = save_legal_review(
+        feature_id=request.feature_id,
+        run_id=request.run_id,
+        verdict=request.verdict,
+        risk_assessment=request.risk_assessment
+    )
+    if not context:
+        raise HTTPException(status_code=404, detail=f"Feature {request.feature_id} not found")
+    return {"status": "saved", "feature_id": request.feature_id}
+
+# --- Timeline and Litigation Report Routes ---
+
+@app.get("/timeline/{feature_id}")
+def get_timeline(feature_id: str):
+    """
+    Returns the complete compliance timeline for a feature.
+    This is the litigation-support output — every compliance decision
+    in chronological order with the deviation point highlighted.
+    """
+    timeline = build_timeline(feature_id)
+    if not timeline:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No compliance data found for feature {feature_id}"
+        )
+    return timeline
+
+@app.get("/timeline/{feature_id}/report")
+def get_litigation_report(feature_id: str):
+    """
+    Returns a structured litigation report for a feature.
+    Designed for use by a litigator or in a regulatory investigation.
+    Contains the full timeline plus a plain-English executive summary
+    of what happened, when it happened, and where things went wrong.
+    """
+    timeline = build_timeline(feature_id)
+    if not timeline:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No compliance data found for feature {feature_id}"
+        )
+
+    # Build the executive summary
+    deviation = timeline.get("deviation_detected", False)
+    events = timeline.get("events", [])
+    feature_name = timeline.get("feature_name", feature_id)
+
+    if deviation:
+        deviation_event = next(
+            (e for e in events if e["event_id"] == timeline.get("deviation_point_event_id")),
+            None
+        )
+        deviation_description = (
+            f"A deviation was detected at event '{deviation_event['event_type']}' "
+            f"on {deviation_event['timestamp']}. "
+            f"At this point the implementation diverged from the approved compliance plan — "
+            f"new critical or high severity issues were introduced after the design had been approved."
+        ) if deviation_event else "A deviation was detected but the exact event could not be identified."
+    else:
+        deviation_description = "No deviation detected. The feature followed the approved compliance plan throughout its development."
+
+    summary_lines = [
+        f"Feature: {feature_name} (ID: {feature_id})",
+        f"Report generated: {timeline['generated_at']}",
+        f"Total compliance events recorded: {timeline['total_events']}",
+        f"Current lifecycle stage: {timeline.get('current_stage')}",
+        "",
+        "DEVIATION STATUS:",
+        deviation_description,
+        "",
+        "FULL EVENT TIMELINE:",
+    ]
+    for event in events:
+        deviation_flag = " *** DEVIATION POINT ***" if event.get("deviation") else ""
+        summary_lines.append(
+            f"[{event.get('timestamp', 'unknown time')}] "
+            f"Stage {event.get('stage')} — {event.get('event_type')} "
+            f"(Actor: {event.get('actor')}) — {event.get('description')}"
+            f"{deviation_flag}"
+        )
+
+    return {
+        "feature_id": feature_id,
+        "feature_name": feature_name,
+        "generated_at": timeline["generated_at"],
+        "deviation_detected": deviation,
+        "deviation_point": timeline.get("deviation_point_event_id"),
+        "executive_summary": "\n".join(summary_lines),
+        "full_timeline": timeline["events"]
+    }
 
 @app.post("/admin/import_verdict")
 def import_verdict(

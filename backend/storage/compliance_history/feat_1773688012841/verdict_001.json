@@ -1,0 +1,68 @@
+{
+  "feature_id": "feat_1773688012841",
+  "version": "001",
+  "timestamp": "2026-03-16T19:09:03.350964",
+  "verdict": {
+    "feature": "Global Payment Gateway",
+    "needs_geo_specific_logic": true,
+    "confidence": 0.7,
+    "risk_score": 50,
+    "compliance_score": 50,
+    "summary": "The global payment gateway presents potential issues with data storage and user consent due to the inability to access necessary legislative information.",
+    "issues": [
+      {
+        "title": "Insufficient Data Storage Regulations",
+        "description": "The payment gateway stores personal identifiers indefinitely without clear compliance with local data retention policies.",
+        "severity": "Medium",
+        "risk_score": 40,
+        "category": "Data Privacy",
+        "impact": "Regulatory fines and loss of user trust",
+        "remediation": "Implement storage policies that align with local data retention requirements."
+      },
+      {
+        "title": "Unclear User Consent Mechanisms",
+        "description": "The inability to access legislative information impacts the understanding of the gateway's user consent practices.",
+        "severity": "Low",
+        "risk_score": 10,
+        "category": "Data Privacy",
+        "impact": "Potential non-compliance with opt-in requirements",
+        "remediation": "Ensure all necessary legislative information can be accessed and that user consent mechanisms are transparent."
+      }
+    ],
+    "evidence_cited": [
+      {
+        "source": "",
+        "citation": "",
+        "content": "The payment gateway stores personal identifiers indefinitely without clear compliance with local data retention policies.",
+        "jurisdiction": "",
+        "frameworks": []
+      },
+      {
+        "source": "",
+        "citation": "Article 5(1)(a) GDPR: Personal data shall be kept in a form which permits identification of data subjects for no longer than is necessary for the purposes for which the personal data are processed.",
+        "content": "The gateway may not comply with the General Data Protection Regulation (GDPR) regarding data retention periods.",
+        "jurisdiction": "EU",
+        "frameworks": [
+          "General Data Protection Regulation"
+        ]
+      },
+      {
+        "source": "",
+        "citation": "CCPA Section 1798.100: A business shall collect personal information for no longer than as is reasonably necessary to achieve the specific purpose for which the personal information was collected.",
+        "content": "The gateway may not comply with the California Consumer Privacy Act (CCPA) regarding data retention periods.",
+        "jurisdiction": "USA-CA",
+        "frameworks": [
+          "California Consumer Privacy Act"
+        ]
+      },
+      {
+        "source": "",
+        "citation": "Opt-in requirement varies by jurisdiction and may be required for storing personal data indefinitely.",
+        "content": "The gateway's user consent mechanisms may need to meet various opt-in requirements depending on the jurisdiction.",
+        "jurisdiction": "",
+        "frameworks": []
+      }
+    ]
+  },
+  "laws_snapshot": []
+}
