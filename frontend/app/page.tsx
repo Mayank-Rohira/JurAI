@@ -3,14 +3,18 @@
 import { Shield, Scale, AlertCircle, CheckCircle2, ChevronDown, User, Settings, Menu, Gavel, Search, Bell, X } from "lucide-react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+
+import { NavBar } from "@/components/NavBar";
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
 
   const targetRef = useRef(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ["start start", "end start"],
@@ -31,7 +35,7 @@ export default function Home() {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: any = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
@@ -43,122 +47,60 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col selection:bg-teal/10 selection:text-teal">
       {/* Navigation */}
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.8, ease: "circOut" }}
-        className="fixed top-0 w-full z-50 bg-parchment/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md border-b border-charcoal/5 dark:border-white/5 px-6 py-4 flex justify-between items-center"
-      >
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2 group cursor-pointer">
-            <div className="relative">
-              <Scale className="w-6 h-6 text-teal transition-transform group-hover:rotate-12" />
-              <motion.div
-                className="absolute -top-1 -right-1 w-2 h-2 bg-gold rounded-full"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-              />
-            </div>
-            <span className="font-serif text-xl font-bold tracking-tight text-teal dark:text-parchment">JurAI</span>
-          </div>
-          <Link href="/settings" className="hidden sm:block text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-teal transition-colors">
-            Settings
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 mr-2 pr-4 border-r border-charcoal/10 dark:border-white/10">
-            <ThemeToggle />
-          </div>
-          <button
-            onClick={() => { setIsSignUp(false); setIsModalOpen(true); }}
-            className="hidden sm:block text-sm font-medium text-teal dark:text-parchment px-4 py-2 hover:bg-teal/5 rounded-sm transition-colors"
-          >
-            Log In
-          </button>
-          <button
-            onClick={() => { setIsSignUp(true); setIsModalOpen(true); }}
-            className="text-sm font-medium bg-teal text-parchment px-5 py-2 rounded-sm shadow-lg hover:shadow-teal/20 hover:-translate-y-0.5 transition-all active:translate-y-0"
-          >
-            Sign Up
-          </button>
-        </div>
-      </motion.nav>
+      <NavBar />
 
       {/* Hero Section */}
       <section ref={targetRef} className="relative h-screen flex flex-col items-center justify-center text-center px-6 pt-20 overflow-hidden">
         {/* Background Image / Texture */}
         <div className="absolute inset-0 -z-20">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-[0.35] dark:opacity-[0.28] grayscale" />
-          <div className="absolute inset-0 bg-gradient-to-b from-parchment/80 via-transparent to-parchment/80 dark:from-[#0A0A0A] dark:via-transparent dark:to-[#0A0A0A]" />
-        </div>
-
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <motion.div
-            style={{ opacity, scale }}
-            animate={{
-              rotate: 360,
-            }}
-            transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/4 left-1/4 w-[50rem] h-[50rem] border border-teal/5 dark:border-teal/10 rounded-full"
-          />
-          <motion.div
-            style={{ opacity, scale }}
-            animate={{
-              rotate: -360,
-            }}
-            transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-            className="absolute bottom-1/4 right-1/4 w-[40rem] h-[40rem] border border-teal/5 dark:border-teal/10 rounded-full"
-          />
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center" />
+          <div className="absolute inset-0 bg-gradient-to-b from-parchment/60 via-parchment/20 to-parchment/60 dark:from-black/80 dark:via-black/40 dark:to-black/80" />
         </div>
 
         <motion.div
-          style={{ opacity, scale, y }}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="max-w-5xl space-y-8 relative"
+            style={{ opacity: mounted ? opacity : 0, scale: mounted ? scale : 1, y: mounted ? y : 0 }}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="max-w-5xl space-y-12 relative"
         >
-          {/* Decorative Elements */}
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-px h-16 bg-gradient-to-b from-transparent to-teal/20" />
-
-          <motion.h1 variants={itemVariants} className="font-serif text-8xl md:text-[12rem] text-teal dark:text-parchment tracking-tighter leading-none select-none">
-            JurAI
-          </motion.h1>
-
-          <motion.div variants={itemVariants} className="space-y-4">
-            <p className="text-2xl md:text-4xl font-serif italic text-slate/80 dark:text-slate/80">
-              “AI-Powered Compliance Intelligence”
-            </p>
-            <p className="text-lg text-charcoal/60 dark:text-parchment/40 max-w-2xl mx-auto font-light leading-relaxed">
-              Detect legal risks before you build. A judicial-grade assessment system for modern product teams, powered by the world's most advanced legal LLMs.
+          <motion.div variants={itemVariants} className="space-y-6">
+            <h1 className="font-serif text-8xl md:text-[14rem] text-teal dark:text-parchment tracking-tighter leading-none select-none drop-shadow-2xl">
+              JurAI
+            </h1>
+            <div className="h-px w-32 bg-gold/50 mx-auto" />
+            <p className="text-2xl md:text-3xl font-serif italic text-teal/80 dark:text-parchment/90">
+              “Automated Compliance Intelligence”
             </p>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="pt-8 flex flex-col items-center justify-center gap-6">
-            <Link
-              href="/dashboard"
-              className="relative inline-flex items-center justify-center px-10 py-5 bg-teal text-parchment font-serif text-xl rounded-sm shadow-2xl hover:shadow-teal/30 transition-all duration-500 group overflow-hidden w-full sm:w-auto"
-            >
-              <span className="relative z-10 flex items-center">
-                Begin Compliance Review
-                <Gavel className="ml-3 w-5 h-5 group-hover:rotate-45 transition-transform duration-500" />
-              </span>
-              <motion.div
-                className="absolute inset-0 bg-charcoal opacity-0 group-hover:opacity-10 transition-opacity"
-              />
-            </Link>
+          <motion.div variants={itemVariants} className="space-y-8">
+            <p className="text-xl text-charcoal/70 dark:text-parchment/70 max-w-2xl mx-auto font-light leading-relaxed">
+              Detect legal and regulatory risks before you build. A professional-grade compliance system for high-growth product teams.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <Link
+                  href="/sessions"
+                  className="group relative px-10 py-5 bg-teal text-parchment font-serif text-xl rounded-sm transition-all overflow-hidden shadow-2xl hover:scale-105 active:scale-95"
+              >
+                <span className="relative z-10 flex items-center gap-3">
+                  Begin Analysis
+                  <ChevronDown className="w-5 h-5 -rotate-90 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              </Link>
+            </div>
+          </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2, duration: 1 }}
-              className="text-slate/30 text-center"
-            >
-              <p className="text-[10px] font-mono uppercase tracking-widest mb-2">Scroll to Explore</p>
-              <ChevronDown className="w-5 h-5 mx-auto animate-bounce" />
-            </motion.div>
+          <motion.div
+              style={{ opacity: mounted ? opacity : 1 }}
+              animate={mounted ? { y: [0, 10, 0] } : {}}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="absolute bottom-[-10rem] left-1/2 -translate-x-1/2 text-teal/30 dark:text-parchment/30"
+          >
+            <p className="text-[10px] font-mono uppercase tracking-[0.3em] mb-2">Explore System</p>
+            <ChevronDown className="w-6 h-6 mx-auto" />
           </motion.div>
         </motion.div>
       </section>
@@ -174,18 +116,18 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-20 space-y-4"
           >
-            <h2 className="font-serif text-5xl text-teal dark:text-parchment">The Judicial Council</h2>
+            <h2 className="font-serif text-5xl text-teal dark:text-parchment">Compliance Analysis</h2>
             <div className="w-24 h-1 bg-gold/30 mx-auto rounded-full" />
             <p className="text-slate/70 dark:text-slate/40 max-w-2xl mx-auto text-lg font-light">
-              Four specialized intelligence agents designed to scrutinize every aspect of your product's legal standing.
+              Specialized analysis modules designed to scrutinize every aspect of your product's compliance standing.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                name: "Juror",
-                role: "Regulatory Risk Analyst",
+                name: "Regulatory Analyst",
+                role: "Risk Assessment",
                 desc: "Scans global databases for applicable statutes and quantifies potential liabilities with precision. Combines regulatory detection with advanced risk assessment.",
                 icon: Shield,
                 id: "RRA-001",
@@ -193,8 +135,8 @@ export default function Home() {
                 image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop"
               },
               {
-                name: "Critic",
-                role: "Design Counsel",
+                name: "UI Auditor",
+                role: "Design Review",
                 desc: "Evaluates user interface patterns for dark patterns and accessibility violations. Ensures your product remains ethical and inclusive.",
                 icon: Scale,
                 id: "CRT-009",
@@ -202,9 +144,9 @@ export default function Home() {
                 image: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800&auto=format&fit=crop"
               },
               {
-                name: "Judge",
-                role: "Compliance Validator",
-                desc: "The final authority on product readiness and legal certification. Issues the definitive verdict on market entry and regulatory standing.",
+                name: "Compliance Lead",
+                role: "Final Validation",
+                desc: "The final authority on product readiness and compliance certification. Issues the definitive report on market entry and regulatory standing.",
                 icon: CheckCircle2,
                 id: "JDG-100",
                 color: "border-teal/20 dark:border-teal/10",
@@ -283,7 +225,7 @@ export default function Home() {
                 <span className="font-serif text-2xl font-bold tracking-tight text-teal dark:text-parchment">JurAI</span>
               </div>
               <p className="text-sm text-slate/50 max-w-xs font-light">
-                The world's first judicial-grade compliance intelligence system for high-growth product teams.
+                Professional-grade compliance intelligence system for high-growth product teams.
               </p>
             </div>
 
@@ -329,122 +271,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {/* Authentication Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-charcoal/80 backdrop-blur-sm"
-            onClick={() => setIsModalOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md bg-parchment dark:bg-[#151515] rounded-xl shadow-2xl border border-charcoal/10 dark:border-white/10 overflow-hidden"
-            >
-              {/* Close Button */}
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-teal transition-colors z-10"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              {/* Modal Header */}
-              <div className="bg-gradient-to-r from-teal via-gold to-teal h-1" />
-              <div className="p-8">
-                <div className="text-center mb-8">
-                  <div className="flex items-center justify-center gap-2 mb-4">
-                    <Scale className="w-8 h-8 text-teal" />
-                    <h2 className="font-serif text-3xl font-bold text-teal dark:text-parchment">JurAI</h2>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm">
-                    {isSignUp ? 'Create your account' : 'Welcome back'}
-                  </p>
-                </div>
-
-                {/* Form */}
-                <form className="space-y-4">
-                  {isSignUp && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="John Doe"
-                        className="w-full px-4 py-3 bg-white dark:bg-[#0A0A0A] border border-charcoal/20 dark:border-white/20 rounded-sm text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal/50 transition-all"
-                      />
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="you@example.com"
-                      className="w-full px-4 py-3 bg-white dark:bg-[#0A0A0A] border border-charcoal/20 dark:border-white/20 rounded-sm text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal/50 transition-all"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      placeholder="••••••••"
-                      className="w-full px-4 py-3 bg-white dark:bg-[#0A0A0A] border border-charcoal/20 dark:border-white/20 rounded-sm text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal/50 transition-all"
-                    />
-                  </div>
-
-                  {isSignUp && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        placeholder="+1 (555) 000-0000"
-                        className="w-full px-4 py-3 bg-white dark:bg-[#0A0A0A] border border-charcoal/20 dark:border-white/20 rounded-sm text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal/50 transition-all"
-                      />
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    className="w-full bg-teal text-parchment py-3 rounded-sm font-medium shadow-lg hover:shadow-teal/20 hover:-translate-y-0.5 transition-all active:translate-y-0 mt-6"
-                  >
-                    {isSignUp ? 'Create Account' : 'Log In'}
-                  </button>
-                </form>
-
-                {/* Toggle between Login/Signup */}
-                <div className="mt-6 text-center">
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-                    {' '}
-                    <button
-                      onClick={() => setIsSignUp(!isSignUp)}
-                      className="text-teal font-medium hover:underline"
-                    >
-                      {isSignUp ? 'Log In' : 'Sign Up'}
-                    </button>
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

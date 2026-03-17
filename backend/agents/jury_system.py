@@ -25,7 +25,7 @@ def run_jury_loop(jury_agent, critic_agent, task_context, max_iterations=2, on_e
     print(f"\n=== Starting Jury Loop: {jury_agent.name} ===")
     
     # 1. Jury creates initial report
-    emit(EVENT_JURY_THINKING, {"msg": f"{jury_agent.name} is analyzing context..."})
+    emit(EVENT_JURY_THINKING, {"msg": "Starting cross-jurisdictional compliance investigation..."})
     
     step_logs = []
     def jury_log_collector(msg):
@@ -39,7 +39,7 @@ def run_jury_loop(jury_agent, critic_agent, task_context, max_iterations=2, on_e
         context=task_context,
         on_log=jury_log_collector
     )
-    emit(EVENT_JURY_REPORT, {"report": current_report})
+    emit(EVENT_JURY_REPORT, {"report": "Primary investigation complete."})
     
     trace.append({
         "agent": jury_agent.name,
@@ -54,7 +54,7 @@ def run_jury_loop(jury_agent, critic_agent, task_context, max_iterations=2, on_e
         time.sleep(1) 
         
         # 2. Critic reviews report
-        emit(EVENT_CRITIC_THINKING, {"msg": f"Critic is checking iteration {i+1}..."})
+        emit(EVENT_CRITIC_THINKING, {"msg": f"Audit round {i+1}: Critical review in progress..."})
         
         step_logs = [] 
         def critic_log_collector(msg):
@@ -70,7 +70,7 @@ def run_jury_loop(jury_agent, critic_agent, task_context, max_iterations=2, on_e
             },
             on_log=critic_log_collector 
         )
-        emit(EVENT_CRITIC_FEEDBACK, {"critique": critique})
+        emit(EVENT_CRITIC_FEEDBACK, {"critique": "Audit feedback generated."})
         
         print(f"Critic Feedback: {critique}")
         trace.append({
@@ -88,7 +88,7 @@ def run_jury_loop(jury_agent, critic_agent, task_context, max_iterations=2, on_e
         time.sleep(1) 
 
         # 3. Jury updates report based on critique
-        emit(EVENT_JURY_THINKING, {"msg": f"Jury is refining report based on feedback..."})
+        emit(EVENT_JURY_THINKING, {"msg": "Refining findings based on auditor feedback..."})
         
         step_logs = []
         # Re-use jury collector but need to reset logs? 
@@ -110,7 +110,7 @@ def run_jury_loop(jury_agent, critic_agent, task_context, max_iterations=2, on_e
             context={"previous_report": current_report},
             on_log=jury_refine_log_collector
         )
-        emit(EVENT_JURY_REPORT, {"report": current_report})
+        emit(EVENT_JURY_REPORT, {"report": "Findings refined and validated."})
 
         trace.append({
             "agent": jury_agent.name,
@@ -157,7 +157,7 @@ def run_pipeline(context_data, on_event=None):
     judge = create_judge_agent("Judge")
     
     print("\n=== Judge Deliberation ===")
-    emit(EVENT_JUDGE_THINKING, {"msg": "Judge is producing final verdict..."})
+    emit(EVENT_JUDGE_THINKING, {"msg": "Chief Justice is deliberating final verdict..."})
     
     step_logs = []
     def judge_log_collector(msg):

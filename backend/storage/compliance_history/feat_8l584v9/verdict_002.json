@@ -1,0 +1,45 @@
+{
+  "feature_id": "feat_8l584v9",
+  "version": "002",
+  "timestamp": "2026-03-17T13:55:50.141151",
+  "verdict": {
+    "feature": "New Feature",
+    "needs_geo_specific_logic": false,
+    "confidence": 0.5,
+    "risk_score": 60,
+    "compliance_score": 40,
+    "summary": "Mobile health app potentially non-compliant with data protection regulations due to handling sensitive personal data.",
+    "issues": [
+      {
+        "title": "Lack of Explicit Regulations",
+        "description": "There are no explicit regulations addressing the specific combination of features (heart rate and location tracking) in any region.",
+        "severity": "High",
+        "risk_score": 60,
+        "category": "Data Privacy",
+        "impact": "Potential fines under various data protection regulations.",
+        "remediation": "Further research and analysis are required to identify applicable regulations and address any compliance gaps."
+      }
+    ],
+    "evidence_cited": [
+      {
+        "source": "GDPR",
+        "citation": "",
+        "content": "Article 6 - Lawfulness of processing: 1. Processing shall be lawful only if and to the extent that at least one of the following applies:",
+        "jurisdiction": "EU",
+        "frameworks": [
+          "General Data Protection Regulation"
+        ]
+      },
+      {
+        "source": "CCPA",
+        "citation": "",
+        "content": "Business Purposes (Cal. Civ. Code \u00a7 1798.100(d)(1)(A)): Collect and sell personal information for a business or commercial purpose.",
+        "jurisdiction": "USA-CA",
+        "frameworks": [
+          "California Consumer Privacy Act"
+        ]
+      }
+    ]
+  },
+  "laws_snapshot": []
+}

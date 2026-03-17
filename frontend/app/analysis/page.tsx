@@ -28,53 +28,18 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { api, API_BASE_URL } from "@/lib/api";
+import { juraiStorage, Session } from "@/lib/storage";
+import { NavBar } from "@/components/NavBar";
 
 // --- Navigation Component ---
-function Navigation() {
-    return (
-        <motion.nav
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.8, ease: "circOut" }}
-            className="fixed top-0 w-full z-50 bg-parchment/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md border-b border-charcoal/5 dark:border-white/5 px-6 py-4 flex justify-between items-center"
-        >
-            <div className="flex items-center gap-8">
-                <Link href="/" className="flex items-center gap-2 group cursor-pointer">
-                    <div className="relative">
-                        <Scale className="w-6 h-6 text-teal transition-transform group-hover:rotate-12" />
-                        <motion.div
-                            className="absolute -top-1 -right-1 w-2 h-2 bg-gold rounded-full"
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ repeat: Infinity, duration: 2 }}
-                        />
-                    </div>
-                    <span className="font-serif text-xl font-bold tracking-tight text-teal dark:text-parchment">JurAI</span>
-                </Link>
-            </div>
-
-            <div className="flex items-center gap-3">
-                <Link
-                    href="/"
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate/70 dark:text-slate/40 hover:text-teal dark:hover:text-teal hover:bg-teal/5 rounded-sm transition-all"
-                >
-                    <Home className="w-4 h-4" />
-                    <span className="hidden sm:inline">Home</span>
-                </Link>
-                <div className="flex items-center gap-1">
-                    <ThemeToggle />
-                </div>
-            </div>
-        </motion.nav>
-    );
-}
+// Locally defined Navigation removed in favor of shared NavBar
 
 // Three agents with detailed roles
 const AGENTS = [
     {
         name: "Regulation Detective",
-        title: "Juror",
+        title: "Regulatory Analyst",
         icon: Shield,
         id: "REG-001",
         color: "text-blue-500",
@@ -86,7 +51,7 @@ const AGENTS = [
     },
     {
         name: "Design Counsel",
-        title: "Critic",
+        title: "UI Auditor",
         icon: Scale,
         id: "CRT-009",
         color: "text-purple-500",
@@ -98,8 +63,8 @@ const AGENTS = [
     },
     {
         name: "Compliance Validator",
-        title: "Judge",
-        icon: Gavel,
+        title: "Compliance Lead",
+        icon: CheckCircle2,
         id: "JDG-100",
         color: "text-teal",
         bgColor: "bg-teal/10",
@@ -112,6 +77,8 @@ const AGENTS = [
 
 export default function AnalysisPage() {
     const [analyzing, setAnalyzing] = useState(true);
+    const [runId, setRunId] = useState<string | null>(null);
+    const [featureId, setFeatureId] = useState<string | null>(null);
     const [activeThinker, setActiveThinker] = useState<string | null>(null);
     const [currentReport, setCurrentReport] = useState<string | null>("Initializing System...");
     const [agentThoughts, setAgentThoughts] = useState<{ [key: string]: string[] }>({
@@ -151,8 +118,10 @@ export default function AnalysisPage() {
     useEffect(() => {
         let isMounted = true;
         const searchParams = new URLSearchParams(window.location.search);
-        const runId = searchParams.get("run_id");
-        const featureId = searchParams.get("feature_id");
+        const rId = searchParams.get("run_id");
+        const fId = searchParams.get("feature_id");
+        setRunId(rId);
+        setFeatureId(fId);
         const pipelineContext = localStorage.getItem("pipeline_context");
 
         const init = async () => {
@@ -199,27 +168,44 @@ export default function AnalysisPage() {
                                     // Handle Events based on type
                                     if (currentEventType === "done") {
                                         // PIPELINE COMPLETE -> TRIGGER AUTOFIX -> SHOW BUTTON
-                                        if (isMounted) setCurrentReport("Analysis pipeline complete. Generating fixes...");
+                                        if (isMounted) setCurrentReport("Analysis complete. Finalizing report...");
 
                                         localStorage.removeItem("pipeline_context"); // Consume context now that we are done
 
                                         const payload = JSON.parse(dataStr);
-                                        // Trigger Autofix in background
-                                        // We use the run_id returned by the stream or generate one
-                                        const finalRunId = payload.run_id || payload.feature_id; // Just using something to reference
+                                        
+                                        // Update state with IDs from stream immediately
+                                        if (payload.run_id) setRunId(payload.run_id);
+                                        if (payload.feature_id) setFeatureId(payload.feature_id);
 
                                         if (payload.feature_id && payload.run_id) {
-                                            // We can optionally explicitly run autofix if the backend hasn't run it yet.
-                                            // Our stream pipeline actually calls risk/diff, but DOES NOT explicitly call autofix pipeline (Run Autofix usually separate). 
-                                            // Let's call it to be sure it's ready for next screen.
-                                            await api.pipeline.runAutofix(payload.feature_id, payload.run_id);
-
                                             // Update URL with real IDs so user can refresh if needed
                                             const newUrl = `${window.location.pathname}?run_id=${payload.run_id}&feature_id=${payload.feature_id}`;
                                             window.history.replaceState({}, '', newUrl);
+
+                                            // Sync with Storage
+                                            const currentUser = juraiStorage.getCurrentUser();
+                                            if (currentUser) {
+                                                juraiStorage.saveSession({
+                                                    id: payload.feature_id,
+                                                    userId: currentUser.id,
+                                                    status: "completed",
+                                                    lastRunId: payload.run_id
+                                                });
+                                            }
+
+                                            // Trigger Autofix in background
+                                            try {
+                                                await api.pipeline.runAutofix(payload.feature_id, payload.run_id);
+                                            } catch (autofixError) {
+                                                console.error("Background autofix failed:", autofixError);
+                                            }
                                         }
 
-                                        if (isMounted) setAnalyzing(false); // <--- THIS SHOWS THE BUTTON
+                                        if (isMounted) {
+                                            setCurrentReport("Analysis complete. Finalizing report...");
+                                            setAnalyzing(false); // This shows the button
+                                        }
                                         return;
                                     }
                                     else if (currentEventType === "status") {
@@ -262,10 +248,16 @@ export default function AnalysisPage() {
 
                                             if (isLog) {
                                                 // It's a thought trace
-                                                setAgentThoughts(prev => ({
-                                                    ...prev,
-                                                    [agentId]: [...(prev[agentId] || []), typeof msg === 'string' ? msg : JSON.stringify(msg)]
-                                                }));
+                                                const cleanMsg = typeof msg === 'string' ? msg : JSON.stringify(msg);
+                                                // Secondary filter for JSON or extremely long lines that look like data
+                                                const isCode = cleanMsg.includes('{') || cleanMsg.includes('[') || cleanMsg.length > 300;
+                                                
+                                                if (!isCode) {
+                                                    setAgentThoughts(prev => ({
+                                                        ...prev,
+                                                        [agentId]: [...(prev[agentId] || []), cleanMsg]
+                                                    }));
+                                                }
                                             } else {
                                                 // It's a high level status message being emitted by agent
                                                 setCurrentReport(typeof msg === 'string' ? msg : JSON.stringify(msg));
@@ -276,11 +268,11 @@ export default function AnalysisPage() {
                                         // Use these major milestones to update the central report text
                                         const payload = JSON.parse(dataStr);
                                         if (currentEventType === "jury_report") {
-                                            if (isMounted) setCurrentReport("Jury has submitted a preliminary report.");
+                                            if (isMounted) setCurrentReport("Regulatory review complete.");
                                         } else if (currentEventType === "critic_feedback") {
-                                            if (isMounted) setCurrentReport("Critic is reviewing the findings...");
+                                            if (isMounted) setCurrentReport("Audit in progress...");
                                         } else if (currentEventType === "judge_verdict") {
-                                            if (isMounted) setCurrentReport("Judge has finalized the verdict.");
+                                            if (isMounted) setCurrentReport("Analysis finalized.");
                                         }
                                     }
                                 } catch (e) { console.error("Stream parse error", e); }
@@ -305,7 +297,7 @@ export default function AnalysisPage() {
                     if (result.verdict || result.status === "CORE_COMPLETED" || result.status === "AUTOFIX_COMPLETED" || result.status === "RISK_COMPLETED") {
                         if (isMounted) {
                             setAnalyzing(false); // <--- THIS SHOWS THE BUTTON
-                            setCurrentReport("Analysis complete. Verdict available.");
+                            setCurrentReport("Analysis complete. Report available.");
 
                             // Load existing traces if available
                             if (result.agent_trace && Array.isArray(result.agent_trace)) {
@@ -399,8 +391,8 @@ export default function AnalysisPage() {
     };
 
     return (
-        <div className="min-h-screen bg-parchment dark:bg-[#0A0A0A] text-charcoal dark:text-parchment flex flex-col">
-            <Navigation />
+        <div className="min-h-screen bg-[#0A0A0A] text-parchment font-sans selection:bg-teal/10 selection:text-teal overflow-x-hidden">
+            <NavBar />
 
             {/* Status Banner */}
             <div className="fixed top-20 left-0 right-0 z-40 flex justify-center px-6">
@@ -416,7 +408,7 @@ export default function AnalysisPage() {
                 >
                     <Activity className={cn("w-4 h-4 text-teal", analyzing ? "animate-pulse" : "")} />
                     <span className="text-xs font-mono uppercase tracking-wider text-teal">
-                        {analyzing ? "Court in Session..." : "Verdict Reached"}
+                        {analyzing ? "Analysis in Progress..." : "Analysis Complete"}
                     </span>
                 </motion.div>
             </div>
@@ -467,9 +459,9 @@ export default function AnalysisPage() {
                                             "bg-white dark:bg-[#151515] border border-teal/20 rounded-lg shadow-lg h-64 transition-all duration-300 flex flex-col",
                                             activeThinker === agent.id ? "ring-1 ring-teal/30" : "opacity-80"
                                         )}>
-                                            <div className="p-3 border-b border-dashed border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center gap-2">
+                                            <div className="p-3 border-b border-slate-200 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/50 flex items-center gap-2">
                                                 <Brain className="w-4 h-4 text-teal" />
-                                                <span className="text-xs font-mono font-bold text-teal uppercase">Live Trace</span>
+                                                <span className="text-xs font-mono font-bold text-teal uppercase">Analysis Logs</span>
                                             </div>
                                             <div
                                                 ref={thoughtRefs[agent.id as keyof typeof thoughtRefs]}
@@ -493,11 +485,11 @@ export default function AnalysisPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="bg-white/50 dark:bg-[#151515]/50 border border-charcoal/10 dark:border-white/10 rounded-lg p-6 shadow-sm inline-block min-w-[300px]"
+                            className="bg-white/70 dark:bg-[#151515]/70 border border-charcoal/20 dark:border-white/20 rounded-lg p-6 shadow-sm inline-block min-w-[300px]"
                         >
                             <div className="flex items-center justify-center gap-2 mb-2 text-teal">
                                 <ScrollText className="w-4 h-4" />
-                                <span className="text-xs font-bold font-mono uppercase tracking-widest">System Status</span>
+                                <span className="text-xs font-bold font-mono uppercase tracking-widest">Status</span>
                             </div>
                             <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
                                 {currentReport}
@@ -519,18 +511,18 @@ export default function AnalysisPage() {
                                             <div className="p-3 bg-teal/10 rounded-full">
                                                 <CheckCircle2 className="w-8 h-8 text-teal" />
                                             </div>
-                                            <h3 className="font-serif text-2xl text-teal dark:text-parchment">Deliberation Complete</h3>
-                                            <p className="text-slate-600 dark:text-slate-400 max-w-md">
-                                                The Judge has reviewed all arguments and evidence. A final verdict and remediation plan are ready.
-                                            </p>
+                                             <h3 className="font-serif text-2xl text-teal dark:text-parchment">Analysis Complete</h3>
+                                             <p className="text-slate-600 dark:text-slate-400 max-w-md">
+                                                 The compliance team has reviewed all aspects of your feature. A final report and remediation plan are ready.
+                                             </p>
 
                                             <Link
-                                                href={`/verdict?run_id=${new URLSearchParams(window.location.search).get("run_id")}&feature_id=${new URLSearchParams(window.location.search).get("feature_id")}`}
+                                                href={`/verdict?run_id=${runId}&feature_id=${featureId}`}
                                                 className="mt-4 group relative inline-flex items-center justify-center px-12 py-4 bg-teal text-parchment font-serif text-xl rounded-lg shadow-xl hover:shadow-teal/40 transition-all duration-300 overflow-hidden"
                                             >
                                                 <span className="relative z-10 flex items-center gap-3">
                                                     <Hammer className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-                                                    View Final Verdict
+                                                    View Full Report
                                                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                                 </span>
                                                 <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
@@ -542,6 +534,46 @@ export default function AnalysisPage() {
                         )}
                     </AnimatePresence>
                 </div>
+                {/* Re-analysis Section */}
+                <div className="mt-12 bg-white dark:bg-[#151515] border border-charcoal/10 dark:border-white/10 rounded-xl p-8 shadow-sm">
+                    <h2 className="font-serif text-2xl text-teal mb-4">Submit Changes for Re-analysis</h2>
+                    <p className="text-slate-600 dark:text-slate-400 mb-6 font-light">
+                        If you've updated your feature based on these findings, provide the new details below for a follow-up compliance review.
+                    </p>
+                    <textarea
+                        className="w-full h-32 bg-[#1E1E1E] text-parchment border border-white/20 rounded-lg p-4 mb-6 focus:ring-1 focus:ring-teal outline-none transition-all placeholder:text-slate/50"
+                        placeholder="Describe the changes you've made to the feature..."
+                    ></textarea>
+                    <div className="flex justify-end">
+                        <button 
+                            onClick={() => {
+                                const currentUser = juraiStorage.getCurrentUser();
+                                if (!currentUser) {
+                                    // Handle case where user is not logged in, e.g., redirect to login
+                                    console.error("User not logged in for re-analysis.");
+                                    return;
+                                }
+
+                                const session = juraiStorage.getSession(featureId || "");
+                                if (session) {
+                                    // Update session status to pending for re-analysis
+                                    juraiStorage.saveSession({
+                                        ...session,
+                                        status: "pending",
+                                        lastAnalysis: new Date().toISOString()
+                                    });
+                                    window.location.href = `/questionnaire?session_id=${featureId}`;
+                                } else {
+                                    console.error("Session not found for re-analysis.");
+                                }
+                            }}
+                            className="px-8 py-3 bg-teal text-parchment font-serif text-lg rounded-lg hover:bg-teal/90 transition-colors shadow-lg shadow-teal/20"
+                        >
+                            Submit for Re-analysis
+                        </button>
+                    </div>
+                </div>
+
             </main>
 
             {/* Background Decoration */}

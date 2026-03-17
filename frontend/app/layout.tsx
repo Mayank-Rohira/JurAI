@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthGuard } from "@/components/AuthGuard";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -30,11 +31,14 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
-          enableSystem
+          defaultTheme="dark"
+          forcedTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
-          {children}
+          <AuthGuard>
+            {children}
+          </AuthGuard>
         </ThemeProvider>
       </body>
     </html>

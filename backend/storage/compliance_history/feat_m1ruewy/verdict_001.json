@@ -1,0 +1,54 @@
+{
+  "feature_id": "feat_m1ruewy",
+  "version": "001",
+  "timestamp": "2026-03-17T12:43:36.402055",
+  "verdict": {
+    "feature": "Subscription Optimization",
+    "needs_geo_specific_logic": true,
+    "confidence": 0.85,
+    "risk_score": 70,
+    "compliance_score": 30,
+    "summary": "The Subscription Optimization feature violates data protection regulations in India due to the lack of explicit user consent for tracking viewing activity and credit card information collection. Implement valid consent mechanisms and comply with data protection regulations.",
+    "issues": [
+      {
+        "title": "Lack of Explicit User Consent",
+        "description": "The feature collects personal data (watch history) without explicit user consent, which is a requirement under the Personal Data Protection Bill, 2019 in India.",
+        "severity": "Critical",
+        "risk_score": 70,
+        "category": "Data Privacy",
+        "impact": "GDPR-like fines and damage to reputation",
+        "remediation": "Implement an opt-in mechanism for data collection during the auto-enrollment process."
+      },
+      {
+        "title": "Insufficient Data Protection Measures",
+        "description": "The Information Technology (Reasonable security practices and procedures and sensitive personal data or information) Rules, 2011 in India require organizations to implement reasonable security practices to protect sensitive personal data or information. The current implementation does not provide sufficient protection for the collected user data.",
+        "severity": "High",
+        "risk_score": 30,
+        "category": "Data Privacy",
+        "impact": "Breaches of user data and subsequent fines or legal action",
+        "remediation": "Implement robust security measures to protect the collected personal data."
+      }
+    ],
+    "evidence_cited": [
+      {
+        "source": "Personal Data Protection Bill, 2019",
+        "citation": "The Personal Data Protection Bill, 2019, Section 35(1)(a)",
+        "content": "Valid consent from users for processing their personal data.",
+        "jurisdiction": "India",
+        "frameworks": [
+          "General Data Protection Regulation"
+        ]
+      },
+      {
+        "source": "Information Technology (Reasonable security practices and procedures and sensitive personal data or information) Rules, 2011",
+        "citation": "The Information Technology Act, 2000 - IT (Reasonable security practices and procedures and sensitive personal data or information) Rules, 2011.",
+        "content": "Implement reasonable security practices to protect sensitive personal data or information.",
+        "jurisdiction": "India",
+        "frameworks": [
+          "General Data Protection Regulation"
+        ]
+      }
+    ]
+  },
+  "laws_snapshot": []
+}

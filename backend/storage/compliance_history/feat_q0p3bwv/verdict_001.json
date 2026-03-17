@@ -1,0 +1,54 @@
+{
+  "feature_id": "feat_q0p3bwv",
+  "version": "001",
+  "timestamp": "2026-03-17T15:11:08.627208",
+  "verdict": {
+    "feature": "Recommendation AI",
+    "needs_geo_specific_logic": true,
+    "confidence": 0.85,
+    "risk_score": 60,
+    "compliance_score": 40,
+    "summary": "The video streaming app's recommendation AI may be non-compliant with Indian data protection laws due to the lack of explicit user consent for collecting and storing watch history data locally on users' devices.",
+    "issues": [
+      {
+        "title": "Lack of Explicit User Consent",
+        "description": "User watch history is collected without explicit consent, which may conflict with Indian data protection laws such as The Personal Data Protection Bill, 2019.",
+        "severity": "High",
+        "risk_score": 60,
+        "category": "Data Privacy",
+        "impact": "GDPR Fines equivalent in India",
+        "remediation": "Implement opt-in mechanism for users to consent to the collection and storage of watch history data"
+      },
+      {
+        "title": "Unclear Compliance with Indian Data Protection Laws",
+        "description": "The AI model's autonomous decision-making without human oversight raises concerns about potential non-compliance with Indian data protection laws.",
+        "severity": "Medium",
+        "risk_score": 40,
+        "category": "Data Privacy",
+        "impact": "Potential legal disputes or penalties in India",
+        "remediation": "Implement policies and procedures for data protection and user consent in compliance with Indian laws"
+      }
+    ],
+    "evidence_cited": [
+      {
+        "source": "India IT Rules 2011",
+        "citation": "Rule 4(3)",
+        "content": "All bodies corporate are required to be in possession of reasonable security practices and procedures for the protection of sensitive personal data or information.",
+        "jurisdiction": "India",
+        "frameworks": [
+          "The Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011"
+        ]
+      },
+      {
+        "source": "India PDPA 2019",
+        "citation": "Section 3(1)",
+        "content": "Personal data must be processed in a fair and lawful manner with the consent of the data principal...",
+        "jurisdiction": "India",
+        "frameworks": [
+          "The Personal Data Protection Bill, 2019"
+        ]
+      }
+    ]
+  },
+  "laws_snapshot": []
+}

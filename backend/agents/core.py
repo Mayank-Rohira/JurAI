@@ -15,7 +15,10 @@ class LiteLlm:
             "stream": stream
         }
         if self.api_key:
-            kwargs["api_key"] = self.api_key
+            if str(self.api_key).startswith("http"):
+                kwargs["api_base"] = self.api_key
+            else:
+                kwargs["api_key"] = self.api_key
         
         # Tools configuration if provided
         if tools:
@@ -101,7 +104,9 @@ class Agent:
                             for s in sentences[:-1]:
                                 s_clean = s.strip()
                                 if s_clean and on_log:
-                                     if not s_clean.startswith("Calling Tool"):
+                                     # Filter out JSON blobs or tool call syntax
+                                     is_json = s_clean.startswith("{") or s_clean.startswith("[") or ('":' in s_clean)
+                                     if not s_clean.startswith("Calling Tool") and not is_json:
                                         on_log(s_clean)
                             sentence_buffer = sentences[-1]
 

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Activity, Scale, Wrench } from "lucide-react";
 
 interface TabNavigationProps {
-    activeTab: "analysis" | "verdict" | "fixes";
+    activeTab: "analysis" | "verdict";
 }
 
 export function TabNavigation({ activeTab }: TabNavigationProps) {
@@ -28,13 +28,6 @@ export function TabNavigation({ activeTab }: TabNavigationProps) {
             href: `/verdict?run_id=${runId || ""}&feature_id=${featureId || ""}`,
             icon: Scale,
             disabled: !runId // Disable if no run_id
-        },
-        {
-            id: "fixes",
-            label: "Remediation",
-            href: `/fixes?run_id=${runId || ""}&feature_id=${featureId || ""}`,
-            icon: Wrench,
-            disabled: !runId
         }
     ];
 

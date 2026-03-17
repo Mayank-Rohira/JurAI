@@ -70,11 +70,25 @@ export const api = {
             return response.json();
         },
         getResults: async (featureId: string, runId: string): Promise<PipelineResult> => {
-            const response = await fetch(`${API_BASE_URL}/results/${featureId}/${runId}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch results");
+            let lastError;
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/results/${featureId}/${runId}`);
+                    if (response.ok) {
+                        return await response.json();
+                    }
+                    if (response.status === 404 && i < 2) {
+                        // Wait and retry on 404 (potential lag)
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        continue;
+                    }
+                    lastError = new Error("Failed to fetch results");
+                } catch (err) {
+                    lastError = err;
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
             }
-            return response.json();
+            throw lastError || new Error("Failed to fetch results after retries");
         },
         runAutofix: async (featureId: string, runId: string): Promise<PipelineResult> => {
             const response = await fetch(`${API_BASE_URL}/run/autofix`, {
@@ -84,6 +98,19 @@ export const api = {
             });
             if (!response.ok) {
                 throw new Error("Failed to run autofix");
+            }
+            return response.json();
+        }
+    },
+    ai: {
+        generateReport: async (data: any): Promise<{ report: string }> => {
+            const response = await fetch(`${API_BASE_URL}/ai/generate-report`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
+            if (!response.ok) {
+                throw new Error("Failed to generate refined report");
             }
             return response.json();
         }

@@ -1,0 +1,72 @@
+{
+  "feature_id": "feat_8l584v9",
+  "version": "001",
+  "timestamp": "2026-03-17T13:55:24.201716",
+  "verdict": {
+    "feature": "New Feature",
+    "needs_geo_specific_logic": true,
+    "confidence": 0.85,
+    "risk_score": 60,
+    "compliance_score": 40,
+    "summary": "The New Feature, a mobile health app tracking user heart rate and location for real-time alerts, partially complies with EU regulations. Implement opt-in modal for data collection and consult local authorities for specific medical condition compliance.",
+    "issues": [
+      {
+        "title": "Lack of User Consent",
+        "description": "The app collects and stores sensitive user data without explicit consent, potentially violating GDPR Article 6(1)(a) which states that 'personal data shall be processed lawfully, fairly and in a transparent manner in relation to the data subject'.",
+        "severity": "Critical",
+        "risk_score": 80,
+        "category": "Data Privacy",
+        "impact": "Potential GDPR fines",
+        "remediation": "Implement an opt-in modal for data collection"
+      },
+      {
+        "title": "Inadequate Data Protection",
+        "description": "The app stores user data for 1 year without mention of appropriate data protection measures, potentially violating GDPR Article 5(1)(f) which states that 'personal data shall be processed in a manner that ensures appropriate security of the personal data'.",
+        "severity": "High",
+        "risk_score": 70,
+        "category": "Data Privacy",
+        "impact": "Risk of data breaches and potential GDPR fines",
+        "remediation": "Implement appropriate security measures for data storage"
+      },
+      {
+        "title": "Unclear Data Sharing with Third Parties",
+        "description": "The app shares user data with third-party medical research partners without explicit mention of how this complies with GDPR Article 17(1) which states that 'the data subject shall have the right to obtain from the controller the erasure of personal data concerning him or her'.",
+        "severity": "Medium",
+        "risk_score": 50,
+        "category": "Data Privacy",
+        "impact": "Potential GDPR complaints and fines",
+        "remediation": "Clearly outline data sharing practices and provide users with the option to opt-out"
+      }
+    ],
+    "evidence_cited": [
+      {
+        "source": "GDPR",
+        "citation": "Article 6(1)(a)",
+        "content": "Personal data shall be processed lawfully, fairly and in a transparent manner in relation to the data subject.",
+        "jurisdiction": "EU",
+        "frameworks": [
+          "General Data Protection Regulation"
+        ]
+      },
+      {
+        "source": "GDPR",
+        "citation": "Article 5(1)(f)",
+        "content": "Personal data shall be processed in a manner that ensures appropriate security of the personal data.",
+        "jurisdiction": "EU",
+        "frameworks": [
+          "General Data Protection Regulation"
+        ]
+      },
+      {
+        "source": "GDPR",
+        "citation": "Article 17(1)",
+        "content": "The data subject shall have the right to obtain from the controller the erasure of personal data concerning him or her.",
+        "jurisdiction": "EU",
+        "frameworks": [
+          "General Data Protection Regulation"
+        ]
+      }
+    ]
+  },
+  "laws_snapshot": []
+}

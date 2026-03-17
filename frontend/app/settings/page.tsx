@@ -1,45 +1,44 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Settings, User, Bell, Shield, Key, Globe, Moon, LogOut, ChevronRight } from "lucide-react";
+import { Settings, User, Shield, LogOut, ChevronRight, Trash2, Moon, AppWindow } from "lucide-react";
 import Link from "next/link";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
+    const router = useRouter();
+
+    const resetData = () => {
+        if (confirm("Are you sure you want to clear all local sessions and assessment data? This cannot be undone.")) {
+            localStorage.clear();
+            alert("Application data reset successfully.");
+            router.push("/");
+        }
+    };
+
     const sections = [
         {
-            title: "Account",
-            icon: User,
-            items: [
-                { label: "Profile Information", desc: "Update your name and email endpoint" },
-                { label: "Password & Security", desc: "Manage your password and 2FA" },
-                { label: "Linked Accounts", desc: "Connect Google or GitHub accounts" }
-            ]
-        },
-        {
             title: "App Preferences",
-            icon: Settings,
+            icon: AppWindow,
             items: [
-                { label: "Notifications", desc: "Configure email and push alerts" },
-                { label: "Appearance", desc: "Theme preferences (Light/Dark)" },
-                { label: "Language", desc: "Select your preferred language" }
+                { label: "Appearance", desc: "Dark Mode (Locked)", value: "Dark", icon: Moon },
+                { label: "AI Engine", desc: "Local Analytics", value: "Ollama (Llama 3.1)", icon: Settings }
             ]
         },
         {
             title: "Privacy & Data",
             icon: Shield,
             items: [
-                { label: "Data Export", desc: "Download your personal data" },
-                { label: "Privacy Settings", desc: "Manage data sharing and visibility" },
-                { label: "Cookie Preferences", desc: "Update cookie consent choices" }
+                { label: "Storage", desc: "Browser LocalStorage", value: "Active" },
+                { label: "Compliance Cache", desc: "Temporary analysis data", value: "Clearable" }
             ]
         }
     ];
 
     return (
-        <div className="min-h-screen bg-parchment dark:bg-[#0A0A0A] text-charcoal dark:text-parchment">
+        <div className="min-h-screen bg-parchment dark:bg-[#0A0A0A] text-charcoal dark:text-parchment font-sans">
             <header className="px-6 py-6 border-b border-charcoal/5 dark:border-white/5 flex items-center gap-4 bg-parchment/50 dark:bg-[#0A0A0A]/50 backdrop-blur-sm sticky top-0 z-10">
-                <Link href="/dashboard" className="p-2 hover:bg-teal/5 rounded-full transition-colors">
+                <Link href="/sessions" className="p-2 hover:bg-teal/5 rounded-full transition-colors">
                     <ChevronRight className="w-5 h-5 text-teal rotate-180" />
                 </Link>
                 <div className="flex items-center gap-2">
@@ -48,61 +47,62 @@ export default function SettingsPage() {
                 </div>
             </header>
 
-            <main className="max-w-4xl mx-auto p-6 space-y-8">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-6"
-                >
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="font-serif text-3xl text-teal dark:text-parchment">Settings</h1>
-                            <p className="text-slate/60 dark:text-slate/40">Manage your account and application preferences</p>
+            <main className="max-w-3xl mx-auto p-6 space-y-12 py-12">
+                <div className="space-y-2">
+                    <h1 className="font-serif text-4xl text-teal dark:text-parchment">System Settings</h1>
+                    <p className="text-slate-500 font-light">Manage your local JurAI laboratory environment.</p>
+                </div>
+
+                <div className="space-y-10">
+                    {sections.map((section, idx) => (
+                        <div key={idx} className="space-y-4">
+                            <div className="flex items-center gap-2 px-2">
+                                <section.icon className="w-4 h-4 text-teal/50" />
+                                <h2 className="text-xs uppercase tracking-[0.2em] font-bold text-slate-500">{section.title}</h2>
+                            </div>
+                            <div className="bg-white dark:bg-[#151515] border border-charcoal/10 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm">
+                                {section.items.map((item, i) => (
+                                    <div key={i} className="p-5 flex items-center justify-between border-b border-charcoal/5 dark:border-white/5 last:border-0 hover:bg-teal/[0.02] transition-colors">
+                                        <div className="flex items-center gap-4">
+                                            {item.icon && <item.icon className="w-5 h-5 text-slate-400" />}
+                                            <div>
+                                                <h3 className="font-medium text-charcoal dark:text-parchment">{item.label}</h3>
+                                                <p className="text-xs text-slate-500 font-light">{item.desc}</p>
+                                            </div>
+                                        </div>
+                                        <span className="text-sm font-mono text-teal bg-teal/5 px-3 py-1 rounded-full">{item.value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2 px-2">
+                            <Trash2 className="w-4 h-4 text-red-400" />
+                            <h2 className="text-xs uppercase tracking-[0.2em] font-bold text-red-400">Danger Zone</h2>
+                        </div>
+                        <div className="bg-red-50/50 dark:bg-red-900/5 border border-red-100 dark:border-red-900/20 rounded-2xl p-6 flex flex-col items-center text-center space-y-4">
+                            <div className="space-y-1">
+                                <h3 className="font-bold text-red-600 dark:text-red-400">Clear All Environment Data</h3>
+                                <p className="text-sm text-red-600/60 dark:text-red-400/60 max-w-xs">This will permanently delete your session history and assessment records from this browser.</p>
+                            </div>
+                            <button 
+                                onClick={resetData}
+                                className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-parchment rounded-xl text-sm font-medium transition-all shadow-lg shadow-red-600/20 flex items-center gap-2"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Reset Laboratory Data
+                            </button>
                         </div>
                     </div>
-
-                    <div className="space-y-6">
-                        {sections.map((section, idx) => (
-                            <motion.div
-                                key={idx}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: idx * 0.1 }}
-                                className="bg-white dark:bg-[#151515] border border-charcoal/10 dark:border-white/10 rounded-sm overflow-hidden"
-                            >
-                                <div className="p-4 bg-slate-50 dark:bg-white/5 border-b border-charcoal/5 dark:border-white/5 flex items-center gap-2">
-                                    <section.icon className="w-4 h-4 text-teal" />
-                                    <h2 className="font-medium text-sm uppercase tracking-widest text-slate/60 dark:text-slate/40">{section.title}</h2>
-                                </div>
-                                <div>
-                                    {section.items.map((item, i) => (
-                                        <div key={i} className="p-5 flex items-center justify-between border-b border-charcoal/5 dark:border-white/5 last:border-0 hover:bg-teal/5 transition-colors cursor-pointer group">
-                                            <div>
-                                                <h3 className="font-medium text-charcoal dark:text-parchment mb-1 group-hover:text-teal transition-colors">{item.label}</h3>
-                                                <p className="text-sm text-slate/60 dark:text-slate/40">{item.desc}</p>
-                                            </div>
-                                            <ChevronRight className="w-4 h-4 text-slate/30 group-hover:text-teal transition-colors" />
-                                        </div>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        ))}
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 }}
-                            className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-sm p-6"
-                        >
-                            <h2 className="font-bold text-red-600 dark:text-red-400 mb-2">Danger Zone</h2>
-                            <p className="text-sm text-red-600/70 dark:text-red-400/70 mb-4">Irreversible actions regarding your account and data.</p>
-                            <button className="px-4 py-2 bg-white dark:bg-red-950 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 rounded-sm text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/40 transition-colors flex items-center gap-2">
-                                <LogOut className="w-4 h-4" />
-                                Delete Account
-                            </button>
-                        </motion.div>
-                    </div>
-                </motion.div>
+                </div>
+                
+                <div className="text-center pt-10">
+                    <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                        JurAI Core v1.4.2 &bull; Local Environment &bull; No External Connectivity
+                    </p>
+                </div>
             </main>
         </div>
     );

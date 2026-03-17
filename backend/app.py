@@ -102,8 +102,6 @@ class AutofixRequest(BaseModel):
     feature_id: str
     run_id: str
 
-    password: str
-
 class ChatMessage(BaseModel):
     role: str
     content: str
@@ -123,6 +121,13 @@ class LegalReviewSaveRequest(BaseModel):
     feature_id: str
     run_id: str
     verdict: Dict[str, Any]
+    risk_assessment: Dict[str, Any]
+
+class ReportRefinementRequest(BaseModel):
+    feature_name: str
+    user_input: str
+    issues: list[Dict[str, Any]]
+    evidence: list[Dict[str, Any]]
     risk_assessment: Dict[str, Any]
 
 # --- Auth Routes ---
@@ -173,18 +178,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 async def ai_chat(request: ChatRequest):
     """
     Proxy route for the dynamic questionnaire.
-    Calls Gemini on behalf of the frontend so the API key stays server-side.
-    Never expose GEMINI_API_KEY to the browser.
+    Calls local Ollama (Llama 3.1 8B) on behalf of the frontend.
     """
     import litellm
-
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        logger.error("/ai/chat called but GEMINI_API_KEY is not set in .env")
-        raise HTTPException(
-            status_code=500,
-            detail="GEMINI_API_KEY is not configured on the server. Add it to your .env file."
-        )
+    logger.info(f"AI Chat Request: {request.dict()}")
 
     full_messages = [{"role": "system", "content": request.system_prompt}] + [
         {"role": m.role, "content": m.content} for m in request.messages
@@ -192,22 +189,66 @@ async def ai_chat(request: ChatRequest):
 
     try:
         response = litellm.completion(
-            model="gemini/gemini-2.0-flash",
+            model="ollama/llama3.1:8b",
             messages=full_messages,
-            api_key=api_key,
+            api_base="http://localhost:11434",
             max_tokens=400
         )
         content = response.choices[0].message.content
         if not content:
-            raise ValueError("Gemini returned an empty response")
+            raise ValueError("Ollama returned an empty response")
         return {"content": content}
 
     except Exception as e:
-        logger.error(f"/ai/chat Gemini call failed: {type(e).__name__}: {e}")
+        logger.error(f"/ai/chat Ollama call failed: {type(e).__name__}: {e}")
         raise HTTPException(
             status_code=500,
             detail=f"AI chat failed: {type(e).__name__}: {str(e)}"
         )
+
+@app.post("/ai/generate-report")
+async def generate_refined_report(request: ReportRefinementRequest):
+    """
+    Synthesizes analysis results into a professional cohesive compliance report.
+    Uses local Ollama (Llama 3.1 8B).
+    """
+    import litellm
+    
+    prompt = f"""
+    You are a Professional Compliance Officer at JurAI. Refine the following compliance analysis into a professional, cohesive narrative report.
+    
+    PRODUCT/FEATURE NAME: {request.feature_name}
+    USER INPUT & CONTEXT: {request.user_input}
+    
+    FINDINGS & ISSUES:
+    {json.dumps(request.issues, indent=2)}
+    
+    LEGAL EVIDENCE & CONTEXT:
+    {json.dumps(request.evidence, indent=2)}
+    
+    RISK ASSESSMENT:
+    {json.dumps(request.risk_assessment, indent=2)}
+    
+    INSTRUCTIONS:
+    1. Write a professional "Executive Summary" first.
+    2. Then detail the "Compliance Gaps" and our "Refined Suggestions/Fixes".
+    3. Clearly cite the "Regulatory Conflicts" and why they apply.
+    4. Keep the tone professional, objective, and authoritative.
+    5. Use plain text formatting. No markdown headers like # or ##. Use CAPITALIZED HEADERS instead.
+    """
+
+    try:
+        response = litellm.completion(
+            model="ollama/llama3.1:8b",
+            messages=[{"role": "user", "content": prompt}],
+            api_base="http://localhost:11434",
+            max_tokens=1500
+        )
+        content = response.choices[0].message.content
+        return {"report": content}
+    except Exception as e:
+        logger.error(f"Report generation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # --- Admin/Test Routes ---
 

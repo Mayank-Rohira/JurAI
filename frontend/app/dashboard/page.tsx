@@ -3,7 +3,6 @@
 import { Scale, Shield, Gavel, Home, User, Settings } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 // --- Navigation Component ---
 function Navigation() {
@@ -12,7 +11,7 @@ function Navigation() {
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.8, ease: "circOut" }}
-            className="fixed top-0 w-full z-50 bg-parchment/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md border-b border-charcoal/5 dark:border-white/5 px-6 py-4 flex justify-between items-center"
+            className="fixed top-0 w-full z-50 bg-parchment/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md border-b border-charcoal/20 dark:border-white/15 px-6 py-4 flex justify-between items-center"
         >
             <div className="flex items-center gap-8">
                 <Link href="/" className="flex items-center gap-2 group cursor-pointer">
@@ -32,7 +31,7 @@ function Navigation() {
                 {/* Navigation Links */}
                 <Link
                     href="/"
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-teal dark:hover:text-teal hover:bg-teal/5 rounded-sm transition-all"
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-teal dark:hover:text-teal hover:bg-teal/15 rounded-sm transition-all"
                 >
                     <Home className="w-4 h-4" />
                     <span className="hidden sm:inline">Home</span>
@@ -52,9 +51,6 @@ function Navigation() {
                     <span className="hidden sm:inline">Settings</span>
                 </Link>
 
-                <div className="flex items-center gap-1">
-                    <ThemeToggle />
-                </div>
             </div>
         </motion.nav>
     );
@@ -117,7 +113,7 @@ export default function DashboardPage() {
                         rotate: { duration: 40, repeat: Infinity, ease: "linear" },
                         scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }
                     }}
-                    className="absolute top-1/4 left-1/4 w-[50rem] h-[50rem] border border-teal/5 dark:border-teal/10 rounded-full"
+                    className="absolute top-1/4 left-1/4 w-[50rem] h-[50rem] border border-teal/20 dark:border-teal/20 rounded-full"
                 />
                 <motion.div
                     animate={{
@@ -147,7 +143,7 @@ export default function DashboardPage() {
                                 initial={{ scale: 0, rotate: -180 }}
                                 animate={{ scale: 1, rotate: 0 }}
                                 transition={{ duration: 1, ease: "backOut", delay: 0.2 }}
-                                className="w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-teal/10 to-teal/5 dark:from-teal/20 dark:to-teal/10 border border-teal/10 flex items-center justify-center relative"
+                                className="w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-teal/20 to-teal/15 dark:from-teal/30 dark:to-teal/20 border border-teal/10 flex items-center justify-center relative"
                             >
                                 <Shield className="w-12 h-12 text-teal" />
                                 <motion.div
@@ -208,7 +204,7 @@ export default function DashboardPage() {
                             />
 
                             {/* Main Card */}
-                            <Link href="/questionnaire">
+                            <Link href="/sessions">
                                 <div className="relative bg-white dark:bg-[#151515] border border-charcoal/10 dark:border-white/10 rounded-xl shadow-2xl p-10 md:p-14 cursor-pointer overflow-hidden">
                                     {/* Decorative Elements */}
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal via-gold to-teal" />
@@ -254,7 +250,7 @@ export default function DashboardPage() {
                                         </motion.div>
 
                                         {/* Divider */}
-                                        <motion.div variants={itemVariants} className="h-px bg-gradient-to-r from-transparent via-charcoal/5 dark:via-white/5 to-transparent" />
+                                        <motion.div variants={itemVariants} className="h-px bg-gradient-to-r from-transparent via-charcoal/15 dark:via-white/15 to-transparent" />
 
                                         {/* Feature Description */}
                                         <motion.div variants={itemVariants} className="space-y-4">
@@ -288,7 +284,7 @@ export default function DashboardPage() {
                                         </motion.div>
 
                                         {/* Divider */}
-                                        <motion.div variants={itemVariants} className="h-px bg-gradient-to-r from-transparent via-charcoal/5 dark:via-white/5 to-transparent" />
+                                        <motion.div variants={itemVariants} className="h-px bg-gradient-to-r from-transparent via-charcoal/15 dark:via-white/15 to-transparent" />
 
                                         {/* CTA Section */}
                                         <motion.div variants={itemVariants} className="pt-2">
@@ -325,7 +321,7 @@ export default function DashboardPage() {
                                     <motion.div
                                         initial={{ opacity: 0 }}
                                         whileHover={{ opacity: 1 }}
-                                        className="absolute inset-0 bg-gradient-to-br from-teal/5 via-transparent to-gold/5 pointer-events-none"
+                                        className="absolute inset-0 bg-gradient-to-br from-teal/15 via-transparent to-gold/15 pointer-events-none"
                                     />
                                 </div>
                             </Link>

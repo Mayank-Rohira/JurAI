@@ -1,0 +1,63 @@
+{
+  "feature_id": "feat_qrt2maq",
+  "version": "001",
+  "timestamp": "2026-03-17T12:00:36.620440",
+  "verdict": {
+    "feature": "New Feature (Global Payments Gateway)",
+    "needs_geo_specific_logic": true,
+    "confidence": 0.9,
+    "risk_score": 60,
+    "compliance_score": 40,
+    "summary": "The New Feature collects card details and obtains explicit user consent for storing payment information but does not provide clear guidelines on the storage of buyer's name. There is some AI involvement in payment processing.",
+    "issues": [
+      {
+        "title": "Lack of Clarity on Buyer's Name Storage",
+        "description": "The user did not provide consistent information regarding whether the buyer's name is stored or not, which can lead to potential non-compliance with data protection regulations.",
+        "severity": "Medium",
+        "risk_score": 20,
+        "category": "Data Privacy",
+        "impact": "Potential GDPR, CCPA, or LGPD fines",
+        "remediation": "Clearly specify whether the buyer's name is stored and provide explicit consent for storing this information"
+      },
+      {
+        "title": "Unclear AI Involvement in Payment Processing",
+        "description": "The user did not provide sufficient details about the impact or influence that the AI has on payment processing decisions within the app.",
+        "severity": "Low",
+        "risk_score": 10,
+        "category": "AI Ethics",
+        "impact": "Potential violations of fairness and transparency in AI decision-making processes",
+        "remediation": "Provide more information about the AI's role and impact on payment processing decisions"
+      }
+    ],
+    "evidence_cited": [
+      {
+        "source": "GDPR",
+        "citation": "Article 6, Articles 9 & 10",
+        "content": "Personal data shall be processed lawfully, fairly and in a transparent manner... The data subject has given consent to the processing of his or her personal data for one or more specific purposes.",
+        "jurisdiction": "EU",
+        "frameworks": [
+          "General Data Protection Regulation"
+        ]
+      },
+      {
+        "source": "CCPA",
+        "citation": "Section 1798.100",
+        "content": "A business shall not collect a consumer's personal information unless the business first provides notice of the collection to the consumer.",
+        "jurisdiction": "USA-CA",
+        "frameworks": [
+          "California Consumer Privacy Act"
+        ]
+      },
+      {
+        "source": "LGPD",
+        "citation": "Article 11",
+        "content": "The collection and treatment of personal data shall be carried out in a lawful, fair and transparent manner... Consent for the processing of personal data is required.",
+        "jurisdiction": "Brazil",
+        "frameworks": [
+          "Lei Geral de Prote\u00e7\u00e3o de Dados"
+        ]
+      }
+    ]
+  },
+  "laws_snapshot": []
+}

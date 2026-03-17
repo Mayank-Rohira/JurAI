@@ -1,0 +1,54 @@
+{
+  "feature_id": "feat_q0p3bwv",
+  "version": "002",
+  "timestamp": "2026-03-17T15:14:34.179429",
+  "verdict": {
+    "feature": "AI-powered recommendation system",
+    "needs_geo_specific_logic": true,
+    "confidence": 0.95,
+    "risk_score": 75,
+    "compliance_score": 25,
+    "summary": "The video streaming app's AI-powered recommendation system requires improvements to meet Indian data protection and user consent requirements.",
+    "issues": [
+      {
+        "title": "Missing Explicit Consent",
+        "description": "The current implementation does not require explicit consent from users for collecting and using their watch history, which is a violation of Article 7 of the Personal Data Protection Bill, 2019.",
+        "severity": "Critical",
+        "risk_score": 85,
+        "category": "Data Privacy",
+        "impact": "Potential GDPR-like fines under Indian law",
+        "remediation": "Implement an opt-in mechanism to gather explicit consent before collecting and using users' watch history"
+      },
+      {
+        "title": "Lack of Transparent Notice",
+        "description": "The system should provide clear and concise notice about the processing of personal data in accordance with Article 3 of the Personal Data Protection Bill, 2019.",
+        "severity": "High",
+        "risk_score": 60,
+        "category": "Data Privacy",
+        "impact": "Potential loss of user trust and possible legal repercussions",
+        "remediation": "Update the policy to include transparent notice about the processing of personal data"
+      }
+    ],
+    "evidence_cited": [
+      {
+        "source": "Personal Data Protection Bill, 2019",
+        "citation": "The Personal Data Protection Bill, 2019 (Bill No. 234 of 2019)",
+        "content": "Article 3: Personal data should be processed in a fair and reasonable manner, with transparent notice provided to the data subject.",
+        "jurisdiction": "India",
+        "frameworks": [
+          "Personal Data Protection Bill, 2019"
+        ]
+      },
+      {
+        "source": "Personal Data Protection Bill, 2019",
+        "citation": "The Personal Data Protection Bill, 2019 (Bill No. 234 of 2019)",
+        "content": "Article 7: Explicit consent from the data subject is required for the processing of sensitive personal data.",
+        "jurisdiction": "India",
+        "frameworks": [
+          "Personal Data Protection Bill, 2019"
+        ]
+      }
+    ]
+  },
+  "laws_snapshot": []
+}

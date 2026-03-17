@@ -1,0 +1,54 @@
+{
+  "feature_id": "feat_qrt2maq",
+  "version": "002",
+  "timestamp": "2026-03-17T12:01:17.481903",
+  "verdict": {
+    "feature": "New Feature: Global Payments Gateway",
+    "needs_geo_specific_logic": true,
+    "confidence": 0.85,
+    "risk_score": 60,
+    "compliance_score": 40,
+    "summary": "The global payments gateway feature collects card details and potentially other payment-related data from customers worldwide, with some AI involvement in payment processing. The collected data aligns with the legislative excerpts provided, which includes Regulation E for error refunds and GDPR for explicit consent, but there are unclear aspects that need clarification.",
+    "issues": [
+      {
+        "title": "Lack of specific AI impact on payment processing",
+        "description": "The exact role and influence of the AI component in the payment processing decisions within the app are not fully specified or clarified.",
+        "severity": "Medium",
+        "risk_score": 20,
+        "category": "Compliance",
+        "impact": "Potential non-compliance with local regulations related to AI in payment processing decisions.",
+        "remediation": "Clearly document the role and influence of AI in payment processing decisions within the app."
+      },
+      {
+        "title": "Unclear geo-specific legal concerns",
+        "description": "There is a lack of clarity regarding potential geo-specific legal concerns that may impact the payments gateway feature, such as local data protection laws in various jurisdictions where users reside.",
+        "severity": "High",
+        "risk_score": 40,
+        "category": "Compliance",
+        "impact": "Potential legal risks and non-compliance with local regulations due to unclear geo-specific legal concerns.",
+        "remediation": "Identify and address potential geo-specific legal concerns related to the payments gateway feature, such as local data protection laws in various jurisdictions."
+      }
+    ],
+    "evidence_cited": [
+      {
+        "source": "Regulation E",
+        "citation": "12 CFR 205.6(a)",
+        "content": "Requires financial institutions to provide prompt refunds for errors in electronic fund transfers.",
+        "jurisdiction": "United States",
+        "frameworks": [
+          "Regulation E"
+        ]
+      },
+      {
+        "source": "General Data Protection Regulation (GDPR)",
+        "citation": "Regulation (EU) 2016/679",
+        "content": "Requires explicit consent for collecting and storing personal data of EU citizens.",
+        "jurisdiction": "European Union",
+        "frameworks": [
+          "General Data Protection Regulation (GDPR)"
+        ]
+      }
+    ]
+  },
+  "laws_snapshot": []
+}

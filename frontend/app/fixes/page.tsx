@@ -172,7 +172,7 @@ export default function FixesPage() {
                     <h2 className="font-serif text-2xl text-teal">
                         {generating ? "Architecting Solutions..." : "Loading Fixes..."}
                     </h2>
-                    <p className="text-slate/60 font-mono text-sm max-w-md">
+                    <p className="text-slate/80 font-mono text-sm max-w-md">
                         JurAI agents are generating engineering steps for your compliance gaps.
                     </p>
                 </div>
@@ -191,7 +191,7 @@ export default function FixesPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-slate/50">Engineering Plan</span>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-slate/70">Engineering Plan</span>
                 </div>
             </header>
 
@@ -213,7 +213,7 @@ export default function FixesPage() {
                     <h1 className="font-serif text-5xl md:text-6xl text-teal dark:text-parchment tracking-tight">
                         Remediation Plan
                     </h1>
-                    <p className="text-lg text-slate/60 dark:text-slate/40 max-w-2xl mx-auto font-light">
+                    <p className="text-lg text-slate/80 dark:text-slate/60 max-w-2xl mx-auto font-light">
                         Actionable engineering steps to mitigate identified risks.
                     </p>
                 </motion.div>
@@ -259,7 +259,7 @@ export default function FixesPage() {
                                                 <h3 className="font-medium text-lg text-charcoal dark:text-parchment mb-1">
                                                     {issue.title}
                                                 </h3>
-                                                <p className="text-sm text-slate/60 dark:text-slate/40 font-light truncate max-w-lg">
+                                                <p className="text-sm text-slate/80 dark:text-slate/60 font-light truncate max-w-lg">
                                                     {issue.summary}
                                                 </p>
                                             </div>
@@ -289,7 +289,7 @@ export default function FixesPage() {
                                                         <div className="space-y-2">
                                                             <div className="flex items-center gap-2">
                                                                 <AlertCircle className={cn("w-4 h-4", colors.icon)} />
-                                                                <h4 className="text-xs font-mono uppercase tracking-widest text-slate/50">
+                                                                <h4 className="text-xs font-mono uppercase tracking-widest text-slate/70">
                                                                     Issue Context
                                                                 </h4>
                                                             </div>
@@ -302,7 +302,7 @@ export default function FixesPage() {
                                                         <div className="space-y-2">
                                                             <div className="flex items-center gap-2">
                                                                 <CheckCircle2 className="w-4 h-4 text-teal" />
-                                                                <h4 className="text-xs font-mono uppercase tracking-widest text-slate/50">
+                                                                <h4 className="text-xs font-mono uppercase tracking-widest text-slate/70">
                                                                     Strategy
                                                                 </h4>
                                                             </div>
