@@ -1,0 +1,26 @@
+{
+  "feature_id": "feat_4bk8ox3",
+  "version": "002",
+  "timestamp": "2026-04-02T16:09:06.810323",
+  "verdict": {
+    "feature": "New Feature",
+    "needs_geo_specific_logic": true,
+    "confidence": 0.5,
+    "risk_score": 50,
+    "compliance_score": 50,
+    "summary": "Insufficient information to provide a comprehensive compliance review due to Agent failure.",
+    "issues": [
+      {
+        "title": "Incomplete Compliance Review",
+        "description": "The Jury Agent failed to provide a complete review due to a rate limit error, resulting in insufficient information to assess compliance.",
+        "severity": "Critical",
+        "risk_score": 100,
+        "category": "Compliance Review",
+        "impact": "Inability to determine compliance with regulations",
+        "remediation": "Retry the compliance review or upgrade to a higher service tier to avoid rate limit errors."
+      }
+    ],
+    "evidence_cited": []
+  },
+  "laws_snapshot": []
+}

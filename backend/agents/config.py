@@ -4,25 +4,19 @@ from .prompts import jury_prompt, jury_report_critic_prompt, jury_final_response
 from .tools import naiverag_retrieve_tool
 
 # --- Models ---
-# Jury: Llama 3.2 (Speed & Generation)
-# Jury: Llama 3.2 (Speed & Generation) -> Switched to Mistral for stability
+# Using Groq (Llama 3.3 70B & 3.1 8B) for high-speed, high-quality legal reasoning
 llama_model = LiteLlm(
-    model="ollama/mistral:latest", 
-    api_key=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    model="groq/llama-3.3-70b-versatile",
 )
 
-# Critic: Gemini 2.0 Flash Lite (Verified Available)
+# Critic: Groq Llama 3.3 70B
 mistral_model = LiteLlm(
-    model="ollama/mistral:latest", 
-    api_key=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    model="groq/llama-3.3-70b-versatile",
 )
 
-# Judge: Mistral 7B (High Quality Synthesis)
-
-# Standard model for features
+# Standard model for features (Llama 3.1 8B Instant is still supported)
 standard_model = LiteLlm(
-    model="ollama/llama3.1:8b",
-    api_key=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+    model="groq/llama-3.1-8b-instant",
 )
 
 

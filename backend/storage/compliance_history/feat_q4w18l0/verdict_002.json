@@ -1,0 +1,13 @@
+{
+  "feature_id": "feat_q4w18l0",
+  "version": "002",
+  "timestamp": "2026-04-02T13:22:58.933288",
+  "verdict": {
+    "error": {
+      "message": "The model `llama-3.1-70b-versatile` has been decommissioned and is no longer supported. Please refer to https://console.groq.com/docs/deprecations for a recommendation on which model to use instead.",
+      "type": "invalid_request_error",
+      "code": "model_decommissioned"
+    }
+  },
+  "laws_snapshot": []
+}

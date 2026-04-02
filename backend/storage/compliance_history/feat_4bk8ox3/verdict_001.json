@@ -1,0 +1,54 @@
+{
+  "feature_id": "feat_4bk8ox3",
+  "version": "001",
+  "timestamp": "2026-04-02T16:08:57.554825",
+  "verdict": {
+    "feature": "New Feature",
+    "needs_geo_specific_logic": true,
+    "confidence": 0.8,
+    "risk_score": 60,
+    "compliance_score": 40,
+    "summary": "The New Feature, utilizing AI for content moderation in the European Union and the United States, poses moderate compliance risks due to the collection and storage of user-generated content data for 30 days. Key concerns include data protection, privacy, and potential GDPR and CCPA implications.",
+    "issues": [
+      {
+        "title": "Data Retention Policy",
+        "description": "The feature stores data for 30 days, which may not be fully compliant with GDPR and CCPA guidelines that require data to be kept for no longer than necessary.",
+        "severity": "Medium",
+        "risk_score": 50,
+        "category": "Data Privacy",
+        "impact": "Potential fines and reputational damage",
+        "remediation": "Implement a data retention policy that ensures data is kept for the minimum necessary period, with clear guidelines for data deletion and anonymization."
+      },
+      {
+        "title": "Cross-Border Data Transfers",
+        "description": "The feature's operation in both the EU and the US raises concerns about cross-border data transfers, which must comply with GDPR and CCPA regulations.",
+        "severity": "High",
+        "risk_score": 80,
+        "category": "Data Privacy",
+        "impact": "Potential fines, legal action, and reputational damage",
+        "remediation": "Ensure that cross-border data transfers are carried out in accordance with GDPR and CCPA requirements, using appropriate mechanisms such as Standard Contractual Clauses or Binding Corporate Rules."
+      }
+    ],
+    "evidence_cited": [
+      {
+        "source": "GDPR",
+        "citation": "Article 5(1)(e)",
+        "content": "Personal data shall be kept in a form which permits identification of data subjects for no longer than is necessary for the purposes for which the personal data are processed.",
+        "jurisdiction": "EU",
+        "frameworks": [
+          "General Data Protection Regulation"
+        ]
+      },
+      {
+        "source": "CCPA",
+        "citation": "Section 1798.100",
+        "content": "A business shall not collect or sell a consumer's personal information if the business does not provide a notice of the right to opt-out of the sale of the consumer's personal information.",
+        "jurisdiction": "USA-CA",
+        "frameworks": [
+          "California Consumer Privacy Act"
+        ]
+      }
+    ]
+  },
+  "laws_snapshot": []
+}

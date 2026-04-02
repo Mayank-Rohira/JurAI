@@ -95,24 +95,7 @@ class Agent:
                     if delta.content:
                         content_chunk = delta.content
                         full_content += content_chunk
-                        sentence_buffer += content_chunk
-                        
-                        # Check for sentence delimiters
-                        sentences = re.split(r'(?<=[.?!])\s+', sentence_buffer)
-                        
-                        if len(sentences) > 1:
-                            for s in sentences[:-1]:
-                                s_clean = s.strip()
-                                if s_clean and on_log:
-                                     # Filter out JSON blobs or tool call syntax
-                                     is_json = s_clean.startswith("{") or s_clean.startswith("[") or ('":' in s_clean)
-                                     if not s_clean.startswith("Calling Tool") and not is_json:
-                                        on_log(s_clean)
-                            sentence_buffer = sentences[-1]
-
-            # Flush remaining buffer
-            if sentence_buffer.strip() and on_log:
-                 on_log(sentence_buffer.strip())
+                        # Skip on_log for regular content sentences to avoid output leaking into thinking logs
 
             print(f"  [Streaming] Finished. Content length: {len(full_content)}")
 

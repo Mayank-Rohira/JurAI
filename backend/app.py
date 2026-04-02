@@ -40,6 +40,7 @@ from features.context_store import (
     list_all_features
 )
 from features.timeline import build_timeline
+from agents.config import mistral_model # Centralized Llama 70B
 
 # --- App Configuration ---
 app = FastAPI(title="JurAI Compliance System")
@@ -53,7 +54,7 @@ origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:8000",
-    "*" 
+    "http://127.0.0.1:8000"
 ]
 
 app.add_middleware(
@@ -178,7 +179,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 async def ai_chat(request: ChatRequest):
     """
     Proxy route for the dynamic questionnaire.
-    Calls local Ollama (Llama 3.1 8B) on behalf of the frontend.
+    Calls Groq (Llama 3.1 8B Instant) on behalf of the frontend.
     """
     import litellm
     logger.info(f"AI Chat Request: {request.dict()}")
@@ -189,18 +190,17 @@ async def ai_chat(request: ChatRequest):
 
     try:
         response = litellm.completion(
-            model="ollama/llama3.1:8b",
+            model="groq/llama-3.1-8b-instant",
             messages=full_messages,
-            api_base="http://localhost:11434",
             max_tokens=400
         )
         content = response.choices[0].message.content
         if not content:
-            raise ValueError("Ollama returned an empty response")
+            raise ValueError("Groq returned an empty response")
         return {"content": content}
 
     except Exception as e:
-        logger.error(f"/ai/chat Ollama call failed: {type(e).__name__}: {e}")
+        logger.error(f"/ai/chat Groq call failed: {type(e).__name__}: {e}")
         raise HTTPException(
             status_code=500,
             detail=f"AI chat failed: {type(e).__name__}: {str(e)}"
@@ -210,7 +210,7 @@ async def ai_chat(request: ChatRequest):
 async def generate_refined_report(request: ReportRefinementRequest):
     """
     Synthesizes analysis results into a professional cohesive compliance report.
-    Uses local Ollama (Llama 3.1 8B).
+    Uses Groq (Llama 3.1 70B Versatile).
     """
     import litellm
     
@@ -238,12 +238,8 @@ async def generate_refined_report(request: ReportRefinementRequest):
     """
 
     try:
-        response = litellm.completion(
-            model="ollama/llama3.1:8b",
-            messages=[{"role": "user", "content": prompt}],
-            api_base="http://localhost:11434",
-            max_tokens=1500
-        )
+        # Use centralized model from config
+        response = mistral_model.complete(messages=[{"role": "user", "content": prompt}])
         content = response.choices[0].message.content
         return {"report": content}
     except Exception as e:
