@@ -1,0 +1,13 @@
+{
+  "feature_id": "feat_22p64e5",
+  "version": "001",
+  "timestamp": "2026-04-02T16:22:27.979373",
+  "verdict": {
+    "error": {
+      "message": "Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 10935, Requested 2010. Please try again in 4.725s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing",
+      "type": "tokens",
+      "code": "rate_limit_exceeded"
+    }
+  },
+  "laws_snapshot": []
+}

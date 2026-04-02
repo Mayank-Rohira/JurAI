@@ -3193,6 +3193,186 @@
                 }
             },
             "status": "AUTOFIX_COMPLETED"
+        },
+        {
+            "run_id": "run_20260402T162227Z_832174",
+            "feature_id": "feat_22p64e5",
+            "timestamp": "2026-04-02T16:22:27.980819",
+            "verdict_json": {
+                "error": {
+                    "message": "Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 10935, Requested 2010. Please try again in 4.725s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing",
+                    "type": "tokens",
+                    "code": "rate_limit_exceeded"
+                }
+            },
+            "agent_trace": [
+                {
+                    "agent": "Jury_Primary",
+                    "step": "Initial Report",
+                    "content": "```\n{\n  \"feature\": \"Streaming app with AI recommendations\",\n  \"feature_description\": \"Streaming app that recommends movies/TV shows based on user viewing history\",\n  \"needs_geo_specific_logic\": true,\n  \"reasoning\": \"The India IT Act 2000 and the Digital Personal Data Protection Act, 2023 have specific provisions related to data protection and transfer of personal data outside India. Section 16 of the Digital Personal Data Protection Act, 2023 restricts the transfer of personal data by a Data Fiduciary for processing to countries or territories outside India as may be notified. Therefore, the app may need geo-specific compliance logic to ensure compliance with these laws.\",\n  \"regions_affected\": [\n    {\n      \"region\": \"India\",\n      \"requirement_summary\": \"Compliance with the India IT Act 2000 and the Digital Personal Data Protection Act, 2023\",\n      \"regulations\": [\n        {\n          \"name\": \"India IT Act 2000\",\n          \"citation\": \"Section 43A\",\n          \"snippet\": \"Implementation of reasonable security practices for sensitive personal data or information\",\n          \"source_id\": \"India IT Act 2000\"\n        },\n        {\n          \"name\": \"Digital Personal Data Protection Act, 2023\",\n          \"citation\": \"Section 16\",\n          \"snippet\": \"Restriction on transfer of personal data by a Data Fiduciary for processing to countries or territories outside India\",\n          \"source_id\": \"Digital Personal Data Protection Act, 2023\"\n        }\n      ]\n    }\n  ],\n  \"past_case_references\": [],\n  \"confidence\": 0.8\n}\n```",
+                    "logs": [
+                        "Preparing to use tools...",
+                        "Calling Tool: naiverag_retrieve with args: {'query': 'India IT Act 2000 and data protection laws relevant to streaming apps'}...",
+                        "Tool Result: Source: THE DIGITAL PERSONAL DATA PROTECTION ACT, 2023.txt\nContent: SPECIAL PROVISIONS\n16. (1) The C..."
+                    ],
+                    "timestamp": "2026-04-02T16:22:19.078709"
+                },
+                {
+                    "agent": "Critic_Reviewer",
+                    "step": "Critique 1",
+                    "content": "Agent failed: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 10467, Requested 1860. Please try again in 1.635s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+                    "logs": [
+                        "Agent Error: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 10467, Requested 1860. Please try again in 1.635s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+                    ],
+                    "timestamp": "2026-04-02T16:22:20.888325"
+                },
+                {
+                    "agent": "Jury_Primary",
+                    "step": "Refinement 1",
+                    "content": "```{\n  \"feature\": \"Streaming app with AI recommendations\",\n  \"feature_description\": \"Streaming app that recommends movies/TV shows based on user viewing history\",\n  \"needs_geo_specific_logic\": true,\n  \"reasoning\": \"The India IT Act 2000 and the Digital Personal Data Protection Act, 2023 have specific provisions related to data protection and transfer of personal data outside India. Section 16 of the Digital Personal Data Protection Act, 2023 restricts the transfer of personal data by a Data Fiduciary for processing to countries or territories outside India as may be notified. Therefore, the app may need geo-specific compliance logic to ensure compliance with these laws.\",\n  \"regions_affected\": [\n    {\n      \"region\": \"India\",\n      \"requirement_summary\": \"Compliance with the India IT Act 2000 and the Digital Personal Data Protection Act, 2023\",\n      \"regulations\": [\n        {\n          \"name\": \"India IT Act 2000\",\n          \"citation\": \"Section 43A\",\n          \"snippet\": \"Implementation of reasonable security practices for sensitive personal data or information\",\n          \"source_id\": \"India IT Act 2000\"\n        },\n        {\n          \"name\": \"Digital Personal Data Protection Act, 2023\",\n          \"citation\": \"Section 16\",\n          \"snippet\": \"Restriction on transfer of personal data by a Data Fiduciary for processing to countries or territories outside India\",\n          \"source_id\": \"Digital Personal Data Protection Act, 2023\"\n        }\n      ]\n    }\n  ],\n  \"past_case_references\": [],\n  \"confidence\": 0.8,\n  \"open_questions\": []\n}\n```",
+                    "logs": [],
+                    "timestamp": "2026-04-02T16:22:22.842057"
+                },
+                {
+                    "agent": "Critic_Reviewer",
+                    "step": "Critique 2",
+                    "content": "Agent failed: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11517, Requested 2186. Please try again in 8.515s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+                    "logs": [
+                        "Agent Error: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11517, Requested 2186. Please try again in 8.515s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+                    ],
+                    "timestamp": "2026-04-02T16:22:25.030096"
+                },
+                {
+                    "agent": "Jury_Primary",
+                    "step": "Refinement 2",
+                    "content": "Agent failed: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11123, Requested 1884. Please try again in 5.035s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+                    "logs": [
+                        "Agent Error: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11123, Requested 1884. Please try again in 5.035s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+                    ],
+                    "timestamp": "2026-04-02T16:22:27.008262"
+                },
+                {
+                    "agent": "Judge",
+                    "step": "Final Verdict",
+                    "content": "Agent failed: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 10935, Requested 2010. Please try again in 4.725s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+                    "logs": [
+                        "Agent Error: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 10935, Requested 2010. Please try again in 4.725s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+                    ],
+                    "timestamp": "2026-04-02T16:22:27.978951"
+                }
+            ],
+            "risk_json": {
+                "risk_assessment": {
+                    "overall_risk": "Low",
+                    "risk_score": 10,
+                    "confidence": 0.8,
+                    "summary": "The verdict indicates a rate limit error, which is a technical issue rather than a compliance violation. The risk is low as it does not imply any legal non-compliance.",
+                    "drivers": [
+                        {
+                            "law": "No applicable law",
+                            "jurisdiction": "No applicable jurisdiction",
+                            "clause": "No applicable clause",
+                            "reason": "The error is related to a technical rate limit, not a compliance issue.",
+                            "severity": "Low"
+                        }
+                    ]
+                }
+            },
+            "autofix_json": {
+                "auto_fix": {
+                    "summary": "Implement rate limiting to avoid exceeding rate limits for Groq model usage",
+                    "fixes": [
+                        {
+                            "title": "Implement rate limiting for Groq model `llama-3.3-70b-versatile`",
+                            "severity": "High",
+                            "description": "Add a request limiter to restrict the rate at which requests are sent to the Groq model to avoid exceeding rate limits",
+                            "issue_reference": "The rate limit exceeded error may prevent users from accessing the service, impacting compliance with user experience expectations and potentially leading to reputational damage",
+                            "remediation_strategy": "Utilize a request limiter library, such as `ratelimit` or `express-rate-limit`, to enforce rate limits on requests to the Groq model API",
+                            "implementation_steps": [
+                                "1. Install the `ratelimit` or `express-rate-limit` library via npm (e.g., `npm install express-rate-limit`) and configure the rate limiting settings to the recommended threshold (e.g., 20 TPM with a 1-minute window)",
+                                "2. Configure the rate limiter to restrict access to the `llama-3.3-70b-versatile` Groq model API",
+                                "3. Test the rate limiter by generating a series of requests to the Groq model API at an increased rate and verify that the rate limiter correctly restricts access to the API"
+                            ],
+                            "category": "Logic",
+                            "affected_jurisdiction": "Global"
+                        }
+                    ]
+                }
+            },
+            "status": "AUTOFIX_COMPLETED"
+        },
+        {
+            "run_id": "run_20260402T162228Z_290802",
+            "feature_id": "feat_22p64e5",
+            "timestamp": "2026-04-02T16:22:28.527553",
+            "verdict_json": {
+                "error": {
+                    "message": "Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11726, Requested 2010. Please try again in 8.68s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing",
+                    "type": "tokens",
+                    "code": "rate_limit_exceeded"
+                }
+            },
+            "agent_trace": [
+                {
+                    "agent": "Jury_Primary",
+                    "step": "Initial Report",
+                    "content": "```\n{\n  \"feature\": \"Streaming app with AI recommendations\",\n  \"feature_description\": \"Streaming app that recommends movies/TV shows based on user viewing history\",\n  \"needs_geo_specific_logic\": true,\n  \"reasoning\": \"According to Section 43A of the Information Technology Act, 2000 (which has been omitted in the Digital Personal Data Protection Act, 2023), companies must implement reasonable security practices to protect sensitive personal information. Although this section has been omitted in the new act, the Digital Personal Data Protection Act, 2023, still emphasizes the importance of protecting personal data. The app, being available in India, needs to comply with the local laws such as the Digital Personal Data Protection Act, 2023, which suggests that implementing geo-specific logic for data protection is necessary.\",\n  \"regions_affected\": [\n    {\n      \"region\": \"India\",\n      \"requirement_summary\": \"Compliance with the Digital Personal Data Protection Act, 2023, for data protection\",\n      \"regulations\": [\n        {\n          \"name\": \"Digital Personal Data Protection Act, 2023\",\n          \"citation\": \"Section 43A (omitted) of the Information Technology Act, 2000, and the Digital Personal Data Protection Act, 2023\",\n          \"snippet\": \"reasonable security practices to protect sensitive personal information\",\n          \"source_id\": \"THE DIGITAL PERSONAL DATA PROTECTION ACT, 2023\"\n        }\n      ]\n    }\n  ],\n  \"past_case_references\": [],\n  \"confidence\": 0.8,\n  \"open_questions\": [\n    \"How does the Digital Personal Data Protection Act, 2023, apply to streaming apps with AI recommendations in India?\",\n    \"Are there any specific requirements or guidelines for data protection in the Digital Personal Data Protection Act, 2023, that the app must comply with?\"\n  ]\n}\n```",
+                    "logs": [
+                        "Preparing to use tools...",
+                        "Calling Tool: naiverag_retrieve with args: {'query': 'India IT Act 2000'}...",
+                        "Tool Result: Source: IT-Act-Rules_2000.txt\nContent: Government of India\nMinistry of Information Technology\nNew De..."
+                    ],
+                    "timestamp": "2026-04-02T16:22:19.810771"
+                },
+                {
+                    "agent": "Critic_Reviewer",
+                    "step": "Critique 1",
+                    "content": "Agent failed: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 10311, Requested 1906. Please try again in 1.085s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+                    "logs": [
+                        "Agent Error: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 10311, Requested 1906. Please try again in 1.085s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+                    ],
+                    "timestamp": "2026-04-02T16:22:21.675850"
+                },
+                {
+                    "agent": "Jury_Primary",
+                    "step": "Refinement 1",
+                    "content": "Agent failed: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11833, Requested 1923. Please try again in 8.78s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+                    "logs": [
+                        "Agent Error: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11833, Requested 1923. Please try again in 8.78s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+                    ],
+                    "timestamp": "2026-04-02T16:22:23.445863"
+                },
+                {
+                    "agent": "Critic_Reviewer",
+                    "step": "Critique 2",
+                    "content": "Agent failed: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11403, Requested 1940. Please try again in 6.715s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+                    "logs": [
+                        "Agent Error: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11403, Requested 1940. Please try again in 6.715s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+                    ],
+                    "timestamp": "2026-04-02T16:22:25.636998"
+                },
+                {
+                    "agent": "Jury_Primary",
+                    "step": "Refinement 2",
+                    "content": "Agent failed: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11022, Requested 1638. Please try again in 3.3s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+                    "logs": [
+                        "Agent Error: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11022, Requested 1638. Please try again in 3.3s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+                    ],
+                    "timestamp": "2026-04-02T16:22:27.546962"
+                },
+                {
+                    "agent": "Judge",
+                    "step": "Final Verdict",
+                    "content": "Agent failed: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11726, Requested 2010. Please try again in 8.68s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+                    "logs": [
+                        "Agent Error: litellm.RateLimitError: RateLimitError: GroqException - {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kmejrjwcfx7ba3y3z3z1rd5a` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 11726, Requested 2010. Please try again in 8.68s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+                    ],
+                    "timestamp": "2026-04-02T16:22:28.525436"
+                }
+            ],
+            "risk_json": null,
+            "autofix_json": null,
+            "status": "CORE_COMPLETED"
         }
     ]
 }

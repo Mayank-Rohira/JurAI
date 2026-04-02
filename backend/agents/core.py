@@ -1,7 +1,8 @@
 import os
 import json
 import re
-from litellm import completion
+from litellm import completion, RateLimitError
+import time
 
 class LiteLlm:
     def __init__(self, model, api_key=None):
@@ -26,9 +27,22 @@ class LiteLlm:
             kwargs["tool_choice"] = "auto"
 
         # Enable aggressive retries for Free Tier rate limits
-        kwargs["num_retries"] = 10 
-
-        response = completion(**kwargs)
+        # RETRY WRAPPER for RateLimitError
+        max_attempts = 3
+        for attempt in range(max_attempts):
+            try:
+                kwargs["num_retries"] = 5 
+                response = completion(**kwargs)
+                break
+            except RateLimitError as e:
+                if attempt == max_attempts - 1:
+                    raise e
+                wait_time = (attempt + 1) * 3
+                print(f"[RETRY] Rate limit on {self.model}. Waiting {wait_time}s... ({attempt + 1}/{max_attempts})")
+                time.sleep(wait_time)
+            except Exception as e:
+                print(f"[ERROR] LLM Error: {e}")
+                raise e
         
         # FIX 1: Safety check before accessing response.choices
         if not stream:
