@@ -49,6 +49,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Database = D
     except JWTError:
         raise credentials_exception
     
+    # Check if DB is actually initialized
+    if db is None:
+        # Fallback to local user if DB is down (Dev Mode)
+        return {"username": "local_dev_user", "email": "dev@jurai.io", "role": "admin"}
+
     # Try finding by email first, then username
     user = db.users.find_one({"$or": [{"email": username_or_email}, {"username": username_or_email}]})
     

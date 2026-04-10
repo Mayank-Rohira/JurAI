@@ -4,9 +4,9 @@ docs/
 
 # Backend
 backend/.env
-backend/*.pyc
+**/*.pyc
 backend/venv/
-backend/__pycache__/
+**/__pycache__/
 backend/chroma_db/
 
 # Frontend

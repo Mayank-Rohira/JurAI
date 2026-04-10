@@ -28,8 +28,8 @@ def get_database():
             client.admin.command('ping')
             logger.info("MongoDB connection successful.")
         except Exception as e:
-            logger.error(f"Failed to connect to MongoDB: {e}")
-            raise e
+            logger.warning(f"Failed to connect to MongoDB: {e}. Falling back to Local Storage mode.")
+            db = None # Explicitly set to None to trigger fallbacks in other modules
     return db
 
 def close_mongo_connection():

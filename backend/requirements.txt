@@ -21,3 +21,4 @@ sse-starlette
 requests
 
 email-validator
+pymongo
