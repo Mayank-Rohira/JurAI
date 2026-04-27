@@ -1,0 +1,540 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 4128
+>>
+stream
+0.5670000000000001 w
+0 G
+BT
+/F2 16 Tf
+18.3999999999999986 TL
+0 g
+42.5196850393700814 785.1970866141732586 Td
+(FEATURE ANALYSIS - ANALYSIS REPORT) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0 g
+42.5196850393700814 756.8506299212598378 Td
+(Case ID: feat_q0p3bwv) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0 g
+42.5196850393700814 728.5041732283464171 Td
+(Generated: 3/17/2026, 8:50:31 PM) Tj
+ET
+0.78 G
+42.5196850393700814 700.1577165354329964 m
+552.7559055118110791 700.1577165354329964 l
+S
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 685.9844881889763428 Td
+(**EXECUTIVE SUMMARY**) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 646.2994488188976447 Td
+(This compliance analysis highlights critical legal risks associated with the AI-powered recommendation) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 626.4569291338582389 Td
+(system for a video streaming app in India. The analysis reveals two significant compliance gaps: missing) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 606.614409448818833 Td
+(explicit consent and lack of transparent notice regarding personal data processing. These issues are in) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 586.7718897637794271 Td
+(direct contravention of Article 7 and Article 3 of the Personal Data Protection Bill, 2019, respectively. This) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 566.9293700787401349 Td
+(report aims to provide refined suggestions and fixes to mitigate these risks, ensuring adherence to Indian) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 547.086850393700729 Td
+(data protection regulations.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 507.4018110236219741 Td
+(**COMPLIANCE GAPS**) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 467.716771653543276 Td
+(The analysis identifies two critical compliance gaps:) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 428.0317322834645211 Td
+(1. **Missing Explicit Consent**: The current implementation fails to obtain explicit consent from users for) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 408.1892125984251152 Td
+(collecting and using their watch history, as mandated by Article 7 of the Personal Data Protection Bill,) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 388.3466929133857661 Td
+(2019.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 368.5041732283464171 Td
+(2. **Lack of Transparent Notice**: The system does not provide clear and concise notice about the) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 348.6616535433070112 Td
+(processing of personal data in accordance with Article 3 of the Personal Data Protection Bill, 2019.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 308.9766141732283131 Td
+(**REFINED SUGGESTIONS/FIXES**) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 269.2915748031495013 Td
+(To address these compliance gaps, the following refined suggestions are proposed:) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 229.6065354330708033 Td
+(1. **Implement an Opt-in Mechanism**: Introduce a user-friendly opt-in mechanism to gather explicit) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 209.7640157480313974 Td
+(consent from users before collecting and using their watch history.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 189.9214960629919915 Td
+(2. **Update Policy with Transparent Notice**: Revise the policy to include clear and concise notice about) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 170.0789763779526993 Td
+(the processing of personal data, ensuring transparency for users.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 130.3939370078738875 Td
+(**REGULATORY CONFLICTS**) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 90.7088976377951894 Td
+(The regulatory conflicts that apply in this scenario are based on Indian data protection regulations:) Tj
+ET
+endstream
+endobj
+5 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 6 0 R
+>>
+endobj
+6 0 obj
+<<
+/Length 2636
+>>
+stream
+0.5670000000000001 w
+0.78 G
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 799.3703149606299121 Td
+(1. **Personal Data Protection Bill, 2019 \(Article 7\)**: This article requires explicit consent from the data) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 779.5277952755905062 Td
+(subject for sensitive personal data processing.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 759.6852755905511003 Td
+(2. **Personal Data Protection Bill, 2019 \(Article 3\)**: This article mandates transparent notice to be) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 739.8427559055118081 Td
+(provided to the data subject regarding the processing of personal data.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 700.15771653543311 Td
+(These regulatory conflicts highlight the necessity for the video streaming app to adhere to Indian data) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 680.3151968503937042 Td
+(protection regulations, ensuring compliance and minimizing potential legal repercussions.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 640.6301574803148924 Td
+(**RISK ASSESSMENT**) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 600.9451181102361943 Td
+(The overall risk assessment indicates a critical risk level \(87.5%\) with high confidence \(0.95%\),) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 581.1025984251967884 Td
+(emphasizing the need for immediate attention to these compliance gaps. The drivers of this risk include:) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 541.4175590551180903 Td
+(1. **Missing Explicit Consent**: Violation of Article 7 of the Personal Data Protection Bill, 2019.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 521.5750393700786844 Td
+(2. **Lack of Transparent Notice**: Non-compliance with Article 3 of the Personal Data Protection Bill,) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 501.7325196850393354 Td
+(2019.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 462.0474803149605805 Td
+(It is essential to address these compliance gaps promptly to mitigate potential fines under Indian law and) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+42.5196850393700814 442.2049606299212314 Td
+(maintain user trust in the video streaming app.) Tj
+ET
+0.78 G
+42.5196850393700814 385.51204724409439 m
+552.7559055118110791 385.51204724409439 l
+S
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+0 g
+42.5196850393700814 371.3388188976377364 Td
+(GENERATED BY JURAI) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R 5 0 R ]
+/Count 2
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+19 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+20 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 7 0 R
+/F2 8 0 R
+/F3 9 0 R
+/F4 10 0 R
+/F5 11 0 R
+/F6 12 0 R
+/F7 13 0 R
+/F8 14 0 R
+/F9 15 0 R
+/F10 16 0 R
+/F11 17 0 R
+/F12 18 0 R
+/F13 19 0 R
+/F14 20 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+21 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/CreationDate (D:20260317205031+05'30')
+>>
+endobj
+22 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 23
+0000000000 65535 f 
+0000007157 00000 n 
+0000008982 00000 n 
+0000000015 00000 n 
+0000000152 00000 n 
+0000004332 00000 n 
+0000004469 00000 n 
+0000007220 00000 n 
+0000007345 00000 n 
+0000007475 00000 n 
+0000007608 00000 n 
+0000007746 00000 n 
+0000007870 00000 n 
+0000007999 00000 n 
+0000008131 00000 n 
+0000008267 00000 n 
+0000008395 00000 n 
+0000008522 00000 n 
+0000008651 00000 n 
+0000008784 00000 n 
+0000008886 00000 n 
+0000009232 00000 n 
+0000009318 00000 n 
+trailer
+<<
+/Size 23
+/Root 22 0 R
+/Info 21 0 R
+/ID [ <41C7A84ABBC857F6DB4812EA9D2AE151> <41C7A84ABBC857F6DB4812EA9D2AE151> ]
+>>
+startxref
+9422
+%%EOF
