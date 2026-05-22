@@ -10,15 +10,10 @@ from typing import Dict, Any, Optional
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
-# from pymongo.database import Database  <-- Removed MongoDB import
 from pydantic import BaseModel, EmailStr
 
 # --- Project Imports ---
-# from database.database import get_database <-- Removed MongoDB dependency
 from features import auth
-# from features.auth import get_current_user <-- Removed Auth dependency
-# from features.auth import get_current_user <-- Removed Auth dependency
-# from api.streaming import router as streaming_router <-- Removed separate file
 
 import asyncio
 from sse_starlette.sse import EventSourceResponse
@@ -69,9 +64,7 @@ app.add_middleware(
 def read_root():
     return {"message": "JurAI Compliance Backend is running", "status": "online"}
 
-# Include external routers
-# Include external routers
-# app.include_router(streaming_router) <-- Removed
+
 
 # --- Local Storage Helper (Replacing MongoDB) ---
 STORAGE_FILE = "temp_data.json"
@@ -133,31 +126,7 @@ class ReportRefinementRequest(BaseModel):
 
 # --- Auth Routes ---
 
-# @app.post("/auth/register", status_code=201)
-# def register(user: UserCreate, db: Database = Depends(get_database)):
-#     # Check if user exists
-#     existing_user = db.users.find_one({"$or": [{"email": user.email}, {"username": user.username}]})
-#     if existing_user:
-#         raise HTTPException(
-#             status_code=400,
-#             detail="Username or email already registered"
-#         )
-#     
-#     # Hash password
-#     hashed_password = auth.get_password_hash(user.password)
-#     
-#     # Create User
-#     user_doc = {
-#         "username": user.username,
-#         "email": user.email,
-#         "password_hash": hashed_password,
-#         "provider": "local",
-#         "created_at": datetime.datetime.utcnow().isoformat()
-#     }
-#     
-#     db.users.insert_one(user_doc)
-#     
-#     return {"message": "User registered successfully"}
+
 
 @app.post("/auth/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
@@ -171,9 +140,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
         expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
-
-    # user = db.users.find_one({"username": form_data.username})
-    # if not user: ...
 
 @app.post("/ai/chat")
 async def ai_chat(request: ChatRequest):

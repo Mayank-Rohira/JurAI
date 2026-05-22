@@ -5,6 +5,19 @@ import { Settings, User, Shield, LogOut, ChevronRight, Trash2, Moon, AppWindow }
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+interface SettingItem {
+    label: string;
+    desc: string;
+    value: string;
+    icon?: any;
+}
+
+interface SettingSection {
+    title: string;
+    icon: any;
+    items: SettingItem[];
+}
+
 export default function SettingsPage() {
     const router = useRouter();
 
@@ -16,7 +29,7 @@ export default function SettingsPage() {
         }
     };
 
-    const sections = [
+    const sections: SettingSection[] = [
         {
             title: "App Preferences",
             icon: AppWindow,

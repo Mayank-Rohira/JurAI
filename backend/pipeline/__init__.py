@@ -1,1 +1,1 @@
-from .pipeline import run_full_pipeline
+# pipeline package init
