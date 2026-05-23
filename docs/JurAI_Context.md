@@ -37,48 +37,41 @@ It sits **inside** the software development process. Engineers use it when propo
 ## Repository Structure
 
 ```
-JurAI-master/
+JurAI/
 ├── backend/
-│   ├── app.py                        Main FastAPI app — all routes live here
-│   ├── requirements.txt              Python dependencies
-│   ├── temp_data.json                Flat-file database — stores all pipeline runs
-│   ├── agents/
-│   │   ├── config.py                 Model definitions (Groq) + agent factory functions
-│   │   ├── core.py                   LiteLlm wrapper class + Agent class
-│   │   ├── jury_system.py            Orchestrates Jury → Critic → Judge loop
-│   │   ├── tools.py                  RAG tool (naiverag_retrieve_tool)
-│   │   └── prompts/
-│   │       ├── jury_prompt.py
-│   │       ├── jury_report_critic_prompt.py
-│   │       └── jury_final_response_prompt.py
-│   ├── pipeline/
-│   │   ├── core_pipeline.py          Pipeline A — runs agents, stores verdict, runs diff
-│   │   ├── risk_pipeline.py          Pipeline B — generates risk assessment
-│   │   └── autofix_pipeline.py       Pipeline C — generates auto-fix recommendations
-│   ├── features/
-│   │   ├── compliance_history/       Versioned verdict storage (flat files on disk)
-│   │   │   └── history_manager.py
-│   │   ├── risk_reasoning/
-│   │   │   ├── risk_engine.py
-│   │   │   └── risk_prompt.py
-│   │   ├── auto_fix/
-│   │   │   ├── fix_engine.py
-│   │   │   └── fix_prompt.py
-│   │   ├── compliance_diff/
-│   │   │   ├── diff_engine.py
-│   │   │   └── diff_prompt.py
-│   │   ├── governance/
-│   │   │   └── human_override.py     Human-in-the-loop override
-│   │   ├── auth.py                   JWT helpers — mock login
-│   │   ├── context_store.py          Stage 1 intake storage logic
-│   │   └── timeline.py               Litigation timeline generation logic
-│   ├── rag/
-│   │   ├── ingest.py                 Ingests legal docs into ChromaDB
-│   │   ├── retrieve.py               Similarity search over ChromaDB
-│   │   └── utils.py                  Embedding model + vector store setup
-│   └── chroma_db/                    Persisted vector store (legal documents already ingested)
+│   ├── agents/                       Consensus engine
+│   │   ├── prompts/                  Jury, critic, and judge prompt configurations
+│   │   ├── config.py                 LLM models and Groq API configs
+│   │   ├── core.py                   LiteLLM wrapper class & core agent class
+│   │   ├── jury_system.py            Consensus loop orchestrator
+│   │   └── tools.py                  RAG statute retrieve tool
+│   ├── features/                     Core compliance features
+│   │   ├── auto_fix/                 Engineering fix generator
+│   │   ├── compliance_diff/          Verdict comparator
+│   │   ├── compliance_history/       Verdict snapshot history
+│   │   ├── governance/               Human-override controls
+│   │   ├── risk_reasoning/           Deterministic scoring engine
+│   │   ├── auth.py                   Mock JWT session utilities
+│   │   ├── context_store.py          Stage 1 intake database manager
+│   │   └── timeline.py               Litigation timeline builder
+│   ├── pipeline/                     Pipeline orchestrations
+│   │   ├── core_pipeline.py          Pipeline A orchestration
+│   │   ├── risk_pipeline.py          Pipeline B orchestration
+│   │   └── autofix_pipeline.py       Pipeline C orchestration
+│   ├── rag/                          RAG infrastructure
+│   │   ├── ingest.py                 Legal text parser and vector ingester
+│   │   ├── retrieve.py               ChromaDB similarity search
+│   │   └── utils.py                  SentenceTransformers setup
+│   ├── app.py                        FastAPI application routes
+│   └── temp_data.json                Flat-file local database
 │
-└── frontend/                         Next.js 14 frontend
+├── frontend/                         Next.js client
+│   ├── app/                          App routing (dashboard, analysis, verdict, timeline)
+│   ├── components/                   Tactile UI elements & layout navigation
+│   └── lib/                          Localstorage access & backend API client
+│
+└── docs/                             Platform design and reference context
+      projectcontext.md · JurAI_Context.md
 ```
 
 ---
